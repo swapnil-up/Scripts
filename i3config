@@ -199,6 +199,15 @@ bindsym $mod+g exec --no-startup-id nautilus --no-desktop --new-window
 # start anki 
 bindsym $mod+Shift+g exec --no-startup-id anki
 
+# autostart anki
+exec --no-startup-id i3-msg 'exec --no-startup-id /usr/local/bin/anki'
+
+#globally take a highlighted text and put it in anki
+bindsym Mod1+o exec --no-startup-id ~/add_to_anki.sh
+
+# connect controller
+bindsym Mod1+Shift+b exec ~/connect_and_launch.sh
+
 # start qutebrowser browser
 #bindsym $mod+Shift+b exec --no-startup-id qutebrowser
 
@@ -216,5 +225,11 @@ bindsym $mod+Shift+minus move scratchpad
 # Show the first scratchpad window
 bindsym $mod+minus scratchpad show
 
+# remove a floating window from scratchpad
+bindsym $mod+x floating disable; floating enable
+
 #custom start script
 exec --no-startup-id sleep 5 && ~/startup.sh
+
+#Adding a desktop background 
+exec --no-startup-id nitrogen --restore
