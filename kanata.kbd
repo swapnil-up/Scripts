@@ -5,12 +5,13 @@
 
 (defsrc
   q w e r t y u i o p
-  caps a s d f h j k l lmet lalt spc ralt rctl
+  caps a s d f g h j k l lmet lalt spc ralt rctl
   x
 )
 (defvar
   tap-time 150
   hold-time 200
+  slow-hold-time 120 
 )
 
 
@@ -19,7 +20,12 @@
 ;;  (rctl spc) (ret)
 ;;)
 
+
 (defalias
+  symbol (layer-while-held symbollayer)
+  r (tap-hold $tap-time $hold-time r @symbol)
+  u (tap-hold $tap-time $hold-time u @symbol)
+
   escctrl (tap-hold 100 100 esc lctl)
   a (tap-hold $tap-time $hold-time a lmet)
   s (tap-hold $tap-time $hold-time s lalt)
@@ -30,6 +36,7 @@
   k (tap-hold $tap-time $hold-time k rsft)
   l (tap-hold $tap-time $hold-time l ralt)
   ;; (multi f24 (tap-hold $tap-time $hold-time ; rmet))
+
   rescctl (tap-hold 150 200 esc rctl)
   spacefn       (layer-while-held spacefnlayer)
   spfn (tap-hold $tap-time $hold-time spc @spacefn)
@@ -37,24 +44,21 @@
   rmall  (macro C-home C-S-end del home S-end del)
 )
 
-(defalias
-  ms↑ (movemouse-up 4 4)
-  ms← (movemouse-left 4 4)
-  ms↓ (movemouse-down 4 4)
-  ms→ (movemouse-right 4 4)
-;;  mouse-left-click  (mlft)
-;;  mouse-right-click (mrgt)
-)
-
 
 (deflayer base
-  q w e r t y u i o p
-  @escctrl @a @s @d @f h @j @k @l lalt @lmet @spfn bspc @rescctl
+  q w e @r t y @u i o p
+  @escctrl @a @s @d @f g h @j @k @l lalt @lmet @spfn bspc @rescctl
   x
 )
 
 (deflayer spacefnlayer
-  q mlft @ms↑ mrgt t home pgdn pgup end p
-  @escctrl @a @ms← @ms↓ @ms→ left down up right lalt lmet spc bspc @rescctl
+  q w e r t home pgdn pgup end p
+  @escctrl @a @s @d @f g left down up right lalt lmet spc bspc @rescctl
   @rmall
+)
+
+(deflayer symbollayer
+  q w e r t y u i o p
+  @escctrl @a [ S-9 S-[ + h = - S-/ lalt @lmet @spfn bspc @rescctl
+  x
 )
