@@ -4,6 +4,7 @@
 )
 
 (defsrc
+  1 2 3 4 5 6 7 8 9 0 - 
   q w e r t y u i o p
   caps a s d f g h j k l lmet lalt spc ralt rctl
   x
@@ -22,6 +23,20 @@
 
 
 (defalias
+  1 (multi lmet 1)
+  2 (multi lmet 2)
+  3 (multi lmet 3)
+  4 (multi lmet 4)
+  5 (multi lmet 5)
+  6 (multi lmet 6)
+  7 (multi lmet 7)
+  8 (multi lmet 8)
+  9 (multi lmet 9)
+  0 (multi lmet 0)
+  - (multi lmet -)
+
+
+
   symbol (layer-while-held symbollayer)
   r (tap-hold $tap-time $hold-time r @symbol)
   u (tap-hold $tap-time $hold-time u @symbol)
@@ -46,18 +61,21 @@
 
 
 (deflayer base
+  1 2 3 4 5 6 7 8 9 0 - 
   q w e @r t y @u i o p
   @escctrl @a @s @d @f g h @j @k @l lalt @lmet @spfn bspc @rescctl
   x
 )
 
 (deflayer spacefnlayer
+  @1 @2 @3 @4 @5 @6 @7 @8 @9 @0 @-
   q w e r t home pgdn pgup end p
   @escctrl @a @s @d @f g left down up right lalt lmet spc bspc @rescctl
   @rmall
 )
 
 (deflayer symbollayer
+  1 2 3 4 5 6 7 8 9 0 - 
   q w e r t y u i o p
   @escctrl @a [ S-9 S-[ + h = - S-/ lalt @lmet @spfn bspc @rescctl
   x
