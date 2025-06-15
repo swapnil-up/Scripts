@@ -23,6 +23,12 @@
 
 
 (defalias
+
+
+  symbol (layer-while-held symbollayer)
+  spacefn (layer-while-held spacefnlayer)
+
+
   1 (multi lmet 1)
   2 (multi lmet 2)
   3 (multi lmet 3)
@@ -36,8 +42,7 @@
   - (multi lmet -)
 
 
-  symbol (layer-while-held symbollayer)
-  r (tap-hold $tap-time $hold-time r @symbol)
+  r (tap-hold $tap-time $hold-time r @spacefn)
   u (tap-hold $tap-time $hold-time u @symbol)
 
 
@@ -54,8 +59,7 @@
 
 
   rescctl (tap-hold 150 200 esc rctl)
-  spacefn       (layer-while-held spacefnlayer)
-  spfn (tap-hold $tap-time $hold-time spc @spacefn)
+  i3fn (tap-hold $tap-time $hold-time spc lmet)
   lmet (tap-hold $tap-time $hold-time ret lmet)
   rmall  (macro C-home C-S-end del home S-end del)
 
@@ -75,7 +79,7 @@
 (deflayer base
   1 2 3 4 5 6 7 8 9 0 - 
   q w e @r t y @u i o p
-  @escctrl @a @s @d @f g h @chj @chk @chl lalt @lmet @spfn bspc @rescctl
+  @escctrl @a @s @d @f g h @chj @chk @chl lalt @lmet @i3fn bspc @rescctl
   x
 )
 
@@ -89,6 +93,6 @@
 (deflayer symbollayer
   1 2 3 4 5 6 7 8 9 0 - 
   q w e r t y u i o p
-  @escctrl @a [ S-9 S-[ + h = - S-/ lalt @lmet @spfn bspc @rescctl
+  @escctrl @a [ S-9 S-[ + h = - S-/ lalt @lmet spc bspc @rescctl
   x
 )
