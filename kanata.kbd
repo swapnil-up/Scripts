@@ -36,10 +36,10 @@
   - (multi lmet -)
 
 
-
   symbol (layer-while-held symbollayer)
   r (tap-hold $tap-time $hold-time r @symbol)
   u (tap-hold $tap-time $hold-time u @symbol)
+
 
   escctrl (tap-hold 100 100 esc lctl)
   a (tap-hold $tap-time $hold-time a lmet)
@@ -52,18 +52,30 @@
   l (tap-hold $tap-time $hold-time l ralt)
   ;; (multi f24 (tap-hold $tap-time $hold-time ; rmet))
 
+
   rescctl (tap-hold 150 200 esc rctl)
   spacefn       (layer-while-held spacefnlayer)
   spfn (tap-hold $tap-time $hold-time spc @spacefn)
   lmet (tap-hold $tap-time $hold-time ret lmet)
   rmall  (macro C-home C-S-end del home S-end del)
+
+  chj (chord ch_jkl @j)
+  chk (chord ch_jkl @k)
+  chl (chord ch_jkl @l)
 )
 
+(defchords ch_jkl 75
+  (@j      ) @j    
+  (   @k   ) @k    
+  (      @l) @l    
+  (  @k @l  ) bspc 
+  (@j @k @l  ) ret
+)
 
 (deflayer base
   1 2 3 4 5 6 7 8 9 0 - 
   q w e @r t y @u i o p
-  @escctrl @a @s @d @f g h @j @k @l lalt @lmet @spfn bspc @rescctl
+  @escctrl @a @s @d @f g h @chj @chk @chl lalt @lmet @spfn bspc @rescctl
   x
 )
 
