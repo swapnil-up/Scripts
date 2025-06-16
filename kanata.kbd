@@ -7,7 +7,7 @@
   1 2 3 4 5 6 7 8 9 0 - 
   q w e r t y u i o p
   caps a s d f g h j k l lmet lalt spc ralt rctl
-  x
+  x c
 )
 (defvar
   tap-time 150
@@ -59,13 +59,24 @@
 
 
   rescctl (tap-hold 150 200 esc rctl)
-  i3fn (tap-hold $tap-time $hold-time spc lmet)
+  spfn (tap-hold $tap-time $hold-time spc @spacefn)
   lmet (tap-hold $tap-time $hold-time ret lmet)
   rmall  (macro C-home C-S-end del home S-end del)
 
   chj (chord ch_jkl @j)
   chk (chord ch_jkl @k)
   chl (chord ch_jkl @l)
+)
+
+(defalias 
+  i3q (multi lmet q)
+  i3r (multi lmet r)
+  i3d (tap-hold $tap-time $hold-time (multi lmet d) lsft)
+  i3g (multi lmet g)
+  i3ret (multi lmet ret)
+  i3f (tap-hold $tap-time $hold-time (multi lmet f) lsft)
+  i3p (multi lmet p)
+  i3c (multi lmet c)
 )
 
 (defchords ch_jkl 75
@@ -79,20 +90,20 @@
 (deflayer base
   1 2 3 4 5 6 7 8 9 0 - 
   q w e @r t y @u i o p
-  @escctrl @a @s @d @f g h @chj @chk @chl lalt @lmet @i3fn bspc @rescctl
-  x
+  @escctrl @a @s @d @f g h @chj @chk @chl lalt @lmet @spfn bspc @rescctl
+  x c
 )
 
 (deflayer spacefnlayer
   @1 @2 @3 @4 @5 @6 @7 @8 @9 @0 @-
-  q w e r t home pgdn pgup end p
-  @escctrl @a @s @d @f g left down up right lalt lmet spc bspc @rescctl
-  @rmall
+  @i3q w e @i3r t home pgdn pgup end @i3p
+  @escctrl @a @s @i3d @i3f @i3g left down up right lalt lmet spc bspc @rescctl
+  @rmall @i3c
 )
 
 (deflayer symbollayer
   1 2 3 4 5 6 7 8 9 0 - 
   q w e r t y u i o p
   @escctrl @a [ S-9 S-[ + h = - S-/ lalt @lmet spc bspc @rescctl
-  x
+  x c
 )
