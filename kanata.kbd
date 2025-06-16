@@ -66,6 +66,12 @@
   chs (chord ch_sdf @s)
   chd (chord ch_sdf @d)
   chf (chord ch_sdf @f)
+
+  chi (chord ch_backspace i)
+  cho (chord ch_backspace o)
+
+  chx (chord ch_tab x)
+  chc (chord ch_tab c)  
 )
 
 (defalias 
@@ -86,11 +92,23 @@
   (@s @d @f  ) ret
 )
 
+(defchords ch_backspace 75
+  (i   ) i    
+  (   o) o    
+  (i o) bspc
+)
+
+(defchords ch_tab 75
+  (x   ) x    
+  (   c) c    
+  (x c) tab
+)
+
 (deflayer base
   1 2 3 4 5 6 7 8 9 0 - 
-  q w e @r t y @u i o p
+  q w e @r t y @u @chi @cho p
   @escctrl @a @chs @chd @chf g h @j @k @l lalt @lmet @spfn bspc @rescctl
-  x c
+  @chx @chc
 )
 
 (deflayer spacefnlayer
