@@ -63,9 +63,9 @@
   lmet (tap-hold $tap-time $hold-time ret lmet)
   rmall  (macro C-home C-S-end del home S-end del)
 
-  chj (chord ch_jkl @j)
-  chk (chord ch_jkl @k)
-  chl (chord ch_jkl @l)
+  chs (chord ch_sdf @s)
+  chd (chord ch_sdf @d)
+  chf (chord ch_sdf @f)
 )
 
 (defalias 
@@ -79,18 +79,17 @@
   i3c (multi lmet c)
 )
 
-(defchords ch_jkl 75
-  (@j      ) @j    
-  (   @k   ) @k    
-  (      @l) @l    
-  (  @k @l  ) bspc 
-  (@j @k @l  ) ret
+(defchords ch_sdf 75
+  (@s      ) @s    
+  (   @d   ) @d    
+  (      @f) @f 
+  (@s @d @f  ) ret
 )
 
 (deflayer base
   1 2 3 4 5 6 7 8 9 0 - 
   q w e @r t y @u i o p
-  @escctrl @a @s @d @f g h @chj @chk @chl lalt @lmet @spfn bspc @rescctl
+  @escctrl @a @chs @chd @chf g h @j @k @l lalt @lmet @spfn bspc @rescctl
   x c
 )
 
