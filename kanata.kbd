@@ -13,6 +13,7 @@
   tap-time 150
   hold-time 200
   slow-hold-time 120 
+  chord-time 30
 )
 
 
@@ -47,10 +48,11 @@
 
 
   escctrl (tap-hold 100 100 esc lctl)
-  a (tap-hold $tap-time $hold-time a lmet)
+  ;; a (tap-hold $tap-time $hold-time a lmet)
   s (tap-hold $tap-time $hold-time s lalt)
   d (tap-hold $tap-time $hold-time d lsft)
   f (tap-hold $tap-time $hold-time f lctl)
+  g (tap-hold $tap-time $hold-time g lmet)
   j (tap-dance 200
      ((tap-hold $tap-time $hold-time j rctl) esc)) 
   k (tap-hold $tap-time $hold-time k rsft)
@@ -63,7 +65,6 @@
   lmet (tap-hold $tap-time $hold-time ret lmet)
   rmall  (macro C-home C-S-end del home S-end del)
 
-  chs (chord ch_sdf @s)
   chd (chord ch_sdf @d)
   chf (chord ch_sdf @f)
 
@@ -85,20 +86,19 @@
   i3c (multi lmet c)
 )
 
-(defchords ch_sdf 75
-  (@s      ) @s    
-  (   @d   ) @d    
-  (      @f) @f 
-  (@s @d @f  ) ret
+(defchords ch_sdf $chord-time
+  (@d   ) @d    
+  (   @f) @f 
+  (@d @f  ) ret
 )
 
-(defchords ch_backspace 75
+(defchords ch_backspace $chord-time
   (i   ) i    
   (   o) o    
   (i o) bspc
 )
 
-(defchords ch_tab 75
+(defchords ch_tab $chord-time
   (x   ) x    
   (   c) c    
   (x c) tab
@@ -107,20 +107,20 @@
 (deflayer base
   1 2 3 4 5 6 7 8 9 0 - 
   q w e @r t y @u @chi @cho p
-  @escctrl @a @chs @chd @chf g h @j @k @l lalt @lmet @spfn bspc @rescctl
+  @escctrl a @s @chd @chf @g h @j @k @l lalt @lmet @spfn bspc @rescctl
   @chx @chc
 )
 
 (deflayer spacefnlayer
   @1 @2 @3 @4 @5 @6 @7 @8 @9 @0 @-
   @i3q w e @i3r t home pgdn pgup end @i3p
-  @escctrl @a @s @i3d @i3f @i3g left down up right lalt lmet spc bspc @rescctl
+  @escctrl a @s @i3d @i3f @g left down up right lalt lmet spc bspc @rescctl
   @rmall @i3c
 )
 
 (deflayer symbollayer
   1 2 3 4 5 6 7 8 9 0 - 
   q w e r t y u i o p
-  @escctrl @a [ S-9 S-[ + h = - S-/ lalt @lmet spc bspc @rescctl
+  @escctrl a [ S-9 S-[ + h = - S-/ lalt @lmet spc bspc @rescctl
   x c
 )
