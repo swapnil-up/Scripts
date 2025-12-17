@@ -1,0 +1,25 @@
+matches:
+  - trigger: ";test"
+    replace: "Espanso is working!"
+    
+  - trigger: ";date"
+    replace: "{{mydate}}"
+    vars:
+      - name: mydate
+        type: date
+        params:
+          format: "%Y-%m-%d"
+
+
+  - trigger: ";gac"
+    replace: "git add . && git commit -m \"$|$\""
+    
+  - trigger: ";jlog"
+    form:
+        console.log("[[name]]", [[name]]);
+
+  - trigger: ";sel"
+    replace: "SELECT * FROM $|$ WHERE 1=1 ORDER BY -id;"
+
+  - trigger: ";todo"
+    replace: "// TODO: $|$"

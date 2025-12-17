@@ -1,0 +1,46 @@
+;; defsrc is still necessary
+(defcfg
+  process-unmapped-keys yes
+)
+
+(defsrc
+  q w e r t y u i o p
+  caps a s d f h j k l ; lmet lalt spc ralt rctl
+)
+(defvar
+  tap-time 150
+  hold-time 200
+)
+
+
+;;(defoverrides
+;;  (lctl spc) (ret)
+;;  (rctl spc) (ret)
+;;)
+
+(defalias
+  escctrl (tap-hold 100 100 esc lctl)
+  a (multi f24 (tap-hold $tap-time $hold-time a lmet))
+  s (multi f24 (tap-hold $tap-time $hold-time s lalt))
+  d (multi f24 (tap-hold $tap-time $hold-time d lsft))
+  f (multi f24 (tap-hold $tap-time $hold-time f lctl))
+  j (tap-dance 200
+     ((tap-hold $tap-time $hold-time j rctl) esc)) 
+  k (multi f24 (tap-hold $tap-time $hold-time k rsft))
+  l (multi f24 (tap-hold $tap-time $hold-time l ralt))
+  ; (multi f24 (tap-hold $tap-time $hold-time ; rmet))
+  rescctl (tap-hold 150 200 esc rctl)
+  spacefn       (layer-while-held spacefnlayer)
+  spfn (tap-hold $tap-time $hold-time spc @spacefn)
+  lmet (multi f24 (tap-hold $tap-time $hold-time ret lmet))
+)
+
+(deflayer base
+  q w e r t y u i o p
+  @escctrl @a @s @d @f h @j @k @l @; lalt @lmet @spfn bspc @rescctl
+)
+
+(deflayer spacefnlayer
+  q w e r t home pgup pgdn end p
+  @escctrl @a @s @d @f left down up right @; lalt lmet spc bspc @rescctl
+)

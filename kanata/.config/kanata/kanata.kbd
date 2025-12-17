@@ -1,0 +1,127 @@
+;; defsrc is still necessary
+(defcfg
+  process-unmapped-keys yes
+)
+
+(defsrc
+  1 2 3 4 5 6 7 8 9 0 - 
+  q w e r t y u i o p
+  caps a s d f g h j k l lmet lalt spc ralt rctl
+  x c
+)
+(defvar
+  tap-time 150
+  hold-time 200
+  slow-hold-time 120 
+  chord-time 30
+)
+
+
+;;(defoverrides
+;;  (lctl spc) (ret)
+;;  (rctl spc) (ret)
+;;)
+
+
+(defalias
+
+
+  symbol (layer-while-held symbollayer)
+  spacefn (layer-while-held spacefnlayer)
+
+
+  1 (multi lmet 1)
+  2 (multi lmet 2)
+  3 (multi lmet 3)
+  4 (multi lmet 4)
+  5 (multi lmet 5)
+  6 (multi lmet 6)
+  7 (multi lmet 7)
+  8 (multi lmet 8)
+  9 (multi lmet 9)
+  0 (multi lmet 0)
+  - (multi lmet -)
+
+
+  r (tap-hold $tap-time $hold-time r @spacefn)
+  u (tap-hold $tap-time $hold-time u @symbol)
+
+
+  escctrl (tap-hold 100 100 esc lctl)
+  ;; a (tap-hold $tap-time $hold-time a lmet)
+  s (tap-hold $tap-time $hold-time s lalt)
+  d (tap-hold $tap-time $hold-time d lsft)
+  f (tap-hold $tap-time $hold-time f lctl)
+  g (tap-hold $tap-time $hold-time g lmet)
+  j (tap-dance 200
+     ((tap-hold $tap-time $hold-time j rctl) esc)) 
+  k (tap-hold $tap-time $hold-time k rsft)
+  l (tap-hold $tap-time $hold-time l ralt)
+  ;; (multi f24 (tap-hold $tap-time $hold-time ; rmet))
+
+
+  rescctl (tap-hold 150 200 esc rctl)
+  spfn (tap-hold $tap-time $hold-time spc @spacefn)
+  lmet (tap-hold $tap-time $hold-time ret lmet)
+  rmall  (macro C-home C-S-end del home S-end del)
+
+  chd (chord ch_sdf @d)
+  chf (chord ch_sdf @f)
+
+  chi (chord ch_backspace i)
+  cho (chord ch_backspace o)
+
+  chw (chord ch_tab w)
+  che (chord ch_tab e)  
+)
+
+(defalias 
+  i3q (multi lmet q)
+  i3r (multi lmet r)
+  i3d (tap-hold $tap-time $hold-time (multi lmet d) lsft)
+  i3g (multi lmet g)
+  i3ret (multi lmet ret)
+;;  i3f (tap-hold $tap-time $hold-time (multi lmet f) lsft)
+  noti3f (tap-hold $tap-time $hold-time ret lsft)
+  i3p (multi lmet p)
+  i3c (multi lmet c)
+)
+
+(defchords ch_sdf $chord-time
+  (@d   ) @d    
+  (   @f) @f 
+  (@d @f  ) ret
+)
+
+(defchords ch_backspace $chord-time
+  (i   ) i    
+  (   o) o    
+  (i o) bspc
+)
+
+(defchords ch_tab $chord-time
+  (w   ) w    
+  (   e) e    
+  (w e) tab
+)
+
+(deflayer base
+  1 2 3 4 5 6 7 8 9 0 - 
+  q @chw @che @r t y @u @chi @cho p
+  @escctrl a @s @chd @chf @g h @j @k @l lalt @lmet @spfn bspc @rescctl
+  x c
+)
+
+(deflayer spacefnlayer
+  @1 @2 @3 @4 @5 @6 @7 @8 @9 @0 @-
+  @i3q w e @i3r t home pgdn pgup end @i3p
+  @escctrl a @s @i3d @noti3f @g left down up right lalt lmet spc bspc @rescctl
+  @rmall @i3c
+)
+
+(deflayer symbollayer
+  1 2 3 4 5 6 7 8 9 0 - 
+  q w e r t y u i o p
+  @escctrl a [ S-9 S-[ + h = - S-/ lalt @lmet spc bspc @rescctl
+  x c
+)
