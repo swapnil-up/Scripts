@@ -3,99 +3,158 @@
 
 TODO_FILE="$HOME/.local/share/todos/todo.txt"
 
-# Get all desktop apps
-apps=$(find /usr/share/applications ~/.local/share/applications -name "*.desktop" 2>/dev/null |
-  xargs grep -h "^Name=" |
-  sed 's/^Name=//' |
-    sort -u)
+# Get all desktop apps from multiple sources
+apps=$(find /usr/share/applications \
+           ~/.local/share/applications \
+           /var/lib/snapd/desktop/applications \
+           /var/lib/flatpak/exports/share/applications \
+           ~/.local/share/flatpak/exports/share/applications \
+           -name "*.desktop" 2>/dev/null | \
+    xargs awk -F= '
+        /^\[Desktop Entry\]/ { 
+            in_entry=1
+            name=""
+            type=""
+        }
+        in_entry && /^Name=/ && name=="" { name=$2 }
+        in_entry && /^Type=/ { type=$2 }
+        in_entry && name && type=="Application" {
+            print name
+            in_entry=0
+        }
+        /^\[/ && !/^\[Desktop Entry\]/ { in_entry=0 }
+    ' | sort -u)
 
 # Build menu with custom commands first
-menu=$(
-  cat <<EOF
+menu=$(cat <<EOF
 📝 tt - Toggle Todo
-➕ t: - Add Todo (e.g. t:buy milk)
+➕ t,text - Add Todo
 🗑️ tr - Remove Todo
-🌐 w: - Web Search (e.g. w:rust tutorials)
-💻 p: - Open Project (e.g. p:scripts)
+🌐 w,query - Web Search (w,gh,query for GitHub, w,yt,query for YouTube, etc)
+💻 p,name - Open Project
+📓 n,name - Obsidian Notes (n,daily for today)
 ---
 $apps
 EOF
 )
 
-# Show apps + custom commands
-selection=$(echo "$menu" | rofi -dmenu -i -p "Launch" -matching fuzzy)
+# Get raw input
+input=$(echo "$apps" | rofi -dmenu -i -p "Launch" -matching fuzzy -allow-custom)
+[ -z "$input" ] && exit 0
 
-[ -z "$selection" ] && exit 0
-
-# Handle special commands
-if [[ "$selection" == *"tt"* ]] || [[ "$selection" == "📝 tt - Toggle Todo" ]]; then
-  ~/scripts/scripts/rofi/rofi-todo-toggle.sh
-    
-elif [[ "$selection" == *"tr"* ]] || [[ "$selection" == "🗑️ tr - Remove Todo" ]]; then
-  ~/scripts/scripts/rofi/rofi-todo-remove.sh
-    
-elif [[ "$selection" == t:* ]] || [[ "$selection" == *"t: - Add Todo"* ]]; then
-    # Extract the actual todo text
-    todo="${selection#*t:}"
-    todo="${todo#*Add Todo*}"
-    todo=$(echo "$todo" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    
-    if [ -n "$todo" ]; then
-    echo "[ ] $(date '+%Y-%m-%d %H:%M') - $todo" >>"$TODO_FILE"
-        notify-send "✓ Todo added" "$todo"
-    fi
-    
-elif [[ "$selection" == w:* ]] || [[ "$selection" == *"w: - Web Search"* ]]; then
-    # Extract the actual search query
-    query="${selection#*w:}"
-    query="${query#*Web Search*}"
-    query=$(echo "$query" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    
-    if [ -n "$query" ]; then
-        firefox-developer-edition "https://www.google.com/search?q=${query// /+}" &
-    fi
-
-elif [[ "$selection" == p:* ]] || [[ "$selection" == *"p: - Open Project"* ]]; then
-    # Open project picker or search directly
-    project_query="${selection#*p:}"
-    project_query="${project_query#*Open Project*}"
-    project_query=$(echo "$project_query" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    
-    if [ -n "$project_query" ]; then
-        # Search for project matching the query
-        PROJECT_DIRS=("$HOME/github" "$HOME/github/work" "$HOME/github/side-hustle")
-        for dir in "${PROJECT_DIRS[@]}"; do
-            if [ -d "$dir/$project_query" ]; then
-                code "$dir/$project_query"
-                exit 0
-            fi
-        done
-        # Not found directly, open the full picker
-        ~/scripts/scripts/rofi/rofi-projects.sh
-    else
-        # No query, open picker
-        ~/scripts/scripts/rofi/rofi-projects.sh
-    fi
-    
-elif [[ "$selection" == "---" ]] || [[ "$selection" == "" ]]; then
-    # Separator or empty, do nothing
-    exit 0
-    
+# Command mode detection
+if [[ "$input" == ,* ]]; then
+    MODE="command"
+    query="${input#,}"   # strip leading comma
 else
-    # Launch app by name - strip any emoji/description first
-    clean_selection=$(echo "$selection" | sed 's/^[[:space:]]*[^a-zA-Z0-9]*[[:space:]]*//')
-    
-  desktop_file=$(find /usr/share/applications ~/.local/share/applications -name "*.desktop" 2>/dev/null |
-        xargs grep -l "^Name=$clean_selection$" | head -1)
-    
-    if [ -n "$desktop_file" ]; then
-        gtk-launch "$(basename "$desktop_file" .desktop)"
-    else
-        # Try running as command - but validate it exists first
-    if command -v "$clean_selection" &>/dev/null; then
-            nohup "$clean_selection" >/dev/null 2>&1 &
-        else
-            notify-send "Error" "Cannot launch: $clean_selection"
-        fi
-    fi
+    MODE="app"
+    query="$input"
 fi
+
+
+if [[ "$MODE" == "app" ]]; then
+    echo "$apps" | grep -Fxq "$input" || exit 0
+    selection="$input"
+    
+    clean_name=$(echo "$selection" | sed 's/^[^a-zA-Z0-9]*[[:space:]]*//' | sed 's/[[:space:]]*-.*//')
+
+    desktop_file=$(find /usr/share/applications \
+                        ~/.local/share/applications \
+                        /var/lib/snapd/desktop/applications \
+                        /var/lib/flatpak/exports/share/applications \
+                        ~/.local/share/flatpak/exports/share/applications \
+                        -name "*.desktop" 2>/dev/null | \
+        xargs grep -l "^Name=$clean_name$" 2>/dev/null | head -1)
+
+    if [ -n "$desktop_file" ]; then
+        gtk-launch "$(basename "$desktop_file" .desktop)" 2>/dev/null
+    elif command -v "$clean_name" &>/dev/null; then
+        nohup "$clean_name" >/dev/null 2>&1 &
+    else
+        notify-send "Error" "Cannot launch: $clean_name"
+    fi
+
+    exit 0
+fi
+
+
+command_help=$(cat <<EOF
+tt            toggle todo
+t <text>      add todo
+tr            remove todo
+p <name>      open project
+n <name>      obsidian note (n daily)
+w,<site> <q>  web search (gh, yt, lb, wiki)
+EOF
+)
+
+case "$query" in
+  tt|tr|p|n|n\ daily|t\ *|w,*\ *)
+    # Command is complete enough → skip help UI
+    ;;
+  *)
+    # Show help only when command is incomplete
+    rofi -dmenu -p ",command" -matching normal -filter "$query" <<< "$command_help" >/dev/null
+    ;;
+esac
+
+
+# Split on first space
+cmd=$(echo "$query" | awk '{print $1}')
+rest=$(echo "$query" | cut -d' ' -f2-)
+
+# Split comma subcommands (for w,lb etc)
+IFS=',' read -r base sub <<< "$cmd"
+
+
+# Handle commands
+case "$base" in
+  tt)
+    ~/scripts/scripts/rofi/rofi-todo-toggle.sh
+    ;;
+
+  t)
+    [ -n "$rest" ] && echo "[ ] $(date '+%Y-%m-%d %H:%M') - $rest" >> "$HOME/.local/share/todos/todo.txt"
+    notify-send "✓ Todo added" "$rest"
+    ;;
+
+  tr)
+    ~/scripts/scripts/rofi/rofi-todo-remove.sh
+    ;;
+
+  p)
+    if [ -z "$rest" ]; then
+        ~/scripts/scripts/rofi/rofi-projects.sh
+    else
+        for dir in "$HOME/github" "$HOME/github/work" "$HOME/github/side-hustle"; do
+            [ -d "$dir/$rest" ] && code "$dir/$rest" && exit 0
+        done
+        ~/scripts/scripts/rofi/rofi-projects.sh
+    fi
+    ;;
+
+  n)
+    if [ "$rest" = "daily" ]; then
+        note="$HOME/obsidian-vault/$(date '+%Y-%m-%d').md"
+        [ ! -f "$note" ] && printf "# %s\n\n" "$(date)" > "$note"
+        i3-msg "exec alacritty -e nvim '$note'"
+    else
+        ~/scripts/scripts/rofi/rofi-obsidian.sh
+    fi
+    ;;
+
+  w)
+    q="${rest// /+}"
+    case "$sub" in
+      gh) firefox-dev "https://github.com/search?q=$q" ;;
+      yt) firefox-dev "https://youtube.com/results?search_query=$q" ;;
+      lb) firefox-dev "https://libgen.is/search.php?req=$q" ;;
+      wiki) firefox-dev "https://en.wikipedia.org/w/index.php?search=$q" ;;
+      *) firefox-dev "https://google.com/search?q=$q" ;;
+    esac
+    ;;
+
+  *)
+    notify-send "Unknown command" ",$query"
+    ;;
+esac
