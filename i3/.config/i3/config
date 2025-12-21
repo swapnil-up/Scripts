@@ -64,7 +64,8 @@ bindsym $mod+q kill
 # There also is i3-dmenu-desktop which only displays applications shipping a
 # .desktop file. It is a wrapper around dmenu, so you need that installed.
 # bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
-bindsym $mod+d exec --no-startup-id rofi -show drun
+# bindsym $mod+d exec --no-startup-id rofi -show drun
+bindsym $mod+d exec --no-startup-id bash ~/scripts/scripts/rofi/rofi-smart-launcher.sh
 bindsym $mod+Tab exec --no-startup-id rofi -show window
 
 # change focus
@@ -309,3 +310,9 @@ bindsym $mod+n exec --no-startup-id ~/.local/bin/quicknote.sh
 
 # conky
 exec_always --no-startup-id conky -c ~/.config/conky/conky.conf
+
+bindsym $mod+t exec --no-startup-id ~/rofi/rofi-todo-menu.sh
+# Or individual bindings:
+# bindsym $mod+t exec --no-startup-id ~/scripts/scripts/rofi-todo-add.sh
+# bindsym $mod+shift+t exec --no-startup-id ~/scripts/scripts/rofi-todo-toggle.sh
+# bindsym $mod+ctrl+t exec --no-startup-id ~/scripts/scripts/rofi-todo-remove.sh
