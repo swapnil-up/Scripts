@@ -3,8 +3,8 @@
 DB="$HOME/.local/share/Anki2/User 1/collection.anki2"
 
 if [ ! -f "$DB" ]; then
-  echo "0"
-  exit 1
+	echo "0"
+	exit 1
 fi
 
 # 7 days ago in seconds

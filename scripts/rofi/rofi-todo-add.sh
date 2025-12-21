@@ -12,7 +12,7 @@ new_todo=$(rofi -dmenu -p "Add todo" -lines 0)
 
 # If user entered something, add it with timestamp
 if [ -n "$new_todo" ]; then
-  timestamp=$(date "+%Y-%m-%d %H:%M")
-  echo "[ ] $timestamp - $new_todo" >>"$TODO_FILE"
-  notify-send "✓ Todo Added" "$new_todo"
+	timestamp=$(date "+%Y-%m-%d %H:%M")
+	echo "[ ] $timestamp - $new_todo" >>"$TODO_FILE"
+	notify-send "✓ Todo Added" "$new_todo"
 fi

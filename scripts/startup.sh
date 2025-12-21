@@ -8,4 +8,3 @@ picom -b
 
 # Swap left Alt and Super keys
 setxkbmap -option 'altwin:swap_lalt_lwin'
-

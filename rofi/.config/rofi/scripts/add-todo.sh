@@ -7,6 +7,6 @@ NEW_TODO=$(rofi -dmenu -p "Add todo:" -lines 0)
 
 # If user entered something, append it
 if [ -n "$NEW_TODO" ]; then
-  echo "$NEW_TODO" >>"$TODO_FILE"
-  notify-send "Todo added" "$NEW_TODO"
+	echo "$NEW_TODO" >>"$TODO_FILE"
+	notify-send "Todo added" "$NEW_TODO"
 fi
