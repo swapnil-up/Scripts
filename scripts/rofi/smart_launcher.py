@@ -83,12 +83,11 @@ def build_candidates():
         ",t <text>    add todo",
         ",tr          remove todo",
         ",p <name>    open project",
-        ",n daily     obsidian daily note",
         ",n <name>    obsidian note",
-        ",w,gh <q>    github search",
-        ",w,yt <q>    youtube search",
-        ",w,lb <q>    libgen search",
-        ",w,wiki <q>  wikipedia search",
+        ",til <name>    TIL note",
+        ",why <name>    why notes",
+        ",hmm <name>    scratchpad append note",
+        ",w <q>    search the web gh, yt, lb, wiki"
     ]
 
     items.append("---")
@@ -100,13 +99,19 @@ def build_candidates():
     return items
 
 def score(query, candidate):
-    if query == candidate:
+    query = query.lower()
+    candidate_lower = candidate.lower()
+
+    if query == candidate_lower:
         return 100
-    if candidate.startswith(query):
+    elif all(word in candidate_lower for word in query.split()):
+        return 90
+    elif candidate_lower.startswith(query):
         return 80
-    if fuzz:
+    elif fuzz:
         return fuzz.partial_ratio(query, candidate)
-    return 0
+    else:
+        return 0
 
 def filter_and_rank(query, items):
     scored = [(score(query, i), i) for i in items]
@@ -184,17 +189,11 @@ def handle_command(base, sub, rest):
                     return
             subprocess.run([home / "scripts/scripts/rofi/rofi-projects.sh"])
 
-    elif base == "n":
-        if rest == "daily":
-            note = home / "obsidian-vault" / f"{time.strftime('%Y-%m-%d')}.md"
-            if not note.exists():
-                note.write_text(f"# {time.strftime('%Y-%m-%d')}\n\n")
-            subprocess.run([
-                "i3-msg",
-                f"exec alacritty -e nvim '{note}'"
-            ])
-        else:
-            subprocess.run([home / "scripts/scripts/rofi/rofi-obsidian.sh"])
+    elif base in ["n", "til", "why", "hmm"]:
+        subprocess.run([
+            home / "scripts/scripts/rofi/rofi-obsidian.sh", base
+        ])
+
 
     elif base == "w":
         q = rest.replace(" ", "+")

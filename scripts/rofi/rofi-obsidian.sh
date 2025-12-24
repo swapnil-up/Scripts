@@ -1,91 +1,94 @@
 #!/bin/bash
-# rofi-obsidian.sh
-# Search and open Obsidian notes
+# Flexible Obsidian notes handler
+# ~/scripts/scripts/rofi-obsidian-flex.sh
 
-VAULT_PATH="$HOME/obsidian-vault"
+declare -A profiles
 
-# Special commands at the top
-special_commands="🆕 new - Create new note in vault root
-📅 daily - Open today's daily note
----"
+# trigger => "folder|template_file|single_file_flag"
+profiles[n]="$HOME/obsidian-vault|$HOME/scripts/scripts/template/obsidian.md|"            # new notes in vault root
+profiles[til]="$HOME/github/coding-problems/learning-notes/TIL|$HOME/scripts/scripts/template/til.md|"  # quick snippets
+profiles[why]="$HOME/notes/why|$HOME/.config/obsidian/templates/why.md|$HOME/scripts/scripts/template/why.md"  # why notes
+profiles[hmm]="$HOME/scratchpad/hmm.md||1"    # append-only scratchpad
 
-# Find all markdown files, sorted by modification time (newest first)
-notes=$(find "$VAULT_PATH" -type f -name "*.md" -printf "%T@ %p\n" 2>/dev/null |
-	sort -rn |
-	cut -d' ' -f2- |
-	sed "s|$VAULT_PATH/||" |
-	sed 's|\.md$||')
+trigger="$1"
+[ -z "$trigger" ] && exit 0
+config="${profiles[$trigger]}"
+[ -z "$config" ] && exit 0
 
-# Combine special commands with notes
-menu=$(
-	cat <<EOF
-$special_commands
-$notes
-EOF
-)
+folder="${config%%|*}"
+rest="${config#*|}"
+template="${rest%%|*}"
+single_file="${rest##*|}"
 
-# Show in rofi
-selection=$(echo "$menu" | rofi -dmenu -i -p "Obsidian" -matching fuzzy -format "s")
+# Helper: launch in nvim
+launch() {
+    i3-msg "exec alacritty -e nvim '$1'"
+}
 
-[ -z "$selection" ] && exit 0
+render_template() {
+    local title="$1"
+    local template_file="$2"
 
-# Handle special commands
-if [[ "$selection" == *"new"* ]] || [[ "$selection" == "🆕 new"* ]]; then
-	# Get note name
-	note_name=$(rofi -dmenu -p "Note name" -lines 0)
+    sed \
+      -e "s/{{title}}/$title/g" \
+      -e "s/{{date}}/$(date '+%Y-%m-%d %H:%M')/g" \
+      "$template_file"
+}
 
-	if [ -n "$note_name" ]; then
-		# Create the note with some content
-		note_path="$VAULT_PATH/${note_name}.md"
+append_hmm() {
+    local file="$1"
 
-		cat >"$note_path" <<EOF
-# $note_name
+    mkdir -p "$(dirname "$file")"
+    [ ! -f "$file" ] && touch "$file"
 
-Created: $(date '+%Y-%m-%d %H:%M')
+    input=$(rofi -dmenu -p "hmm…" -lines 0)
+    [ -z "$input" ] && exit 0
 
-EOF
+    {
+        echo ""
+        echo "## $(date '+%Y-%m-%d %H:%M')"
+        echo "$input"
+    } >>"$file"
 
-		# Open in nvim inside a terminal
-		i3-msg "exec alacritty -e nvim '$note_path'"
-
-		notify-send "📝 Note created" "$note_name"
-	fi
-
-elif [[ "$selection" == *"daily"* ]] || [[ "$selection" == "📅 daily"* ]]; then
-	# Open or create daily note
-	daily_note="$(date '+%Y-%m-%d').md"
-	daily_path="$VAULT_PATH/$daily_note"
-
-	if [ ! -f "$daily_path" ]; then
-		# Create daily note with template
-		cat >"$daily_path" <<EOF
-# $(date '+%A, %B %d, %Y')
-
-## Today's Focus
+    launch "$file"
+}
 
 
-## Notes
-
-
-## Tasks
-- [ ] 
-
-EOF
-	fi
-
-	# Open in nvim inside a terminal
-	i3-msg "exec alacritty -e nvim '$daily_path'"
-
-elif [[ "$selection" == "---" ]] || [[ "$selection" == "" ]]; then
-	exit 0
-
-else
-	# Open selected note in nvim inside a terminal
-	note_path="$VAULT_PATH/${selection}.md"
-
-	if [ -f "$note_path" ]; then
-		i3-msg "exec alacritty -e nvim '$note_path'"
-	else
-		notify-send "Error" "Note not found: $selection"
-	fi
+# Append-only single file
+if [ "$single_file" == "1" ]; then
+    append_hmm "$folder"
+    exit 0
 fi
+
+# Build rofi menu: list all .md files (without extension)
+mkdir -p "$folder"
+files=$(find "$folder" -maxdepth 1 -type f -name "*.md" \
+    -printf "%T@|%f\n" \
+  | sort -nr \
+  | cut -d'|' -f2 \
+  | sed 's/\.md$//')
+
+menu="$files"
+
+# Show rofi menu
+selection=$(echo -e "$menu" | rofi -dmenu -i -p "Obsidian" -matching fuzzy -format "s")
+
+# If empty, assume user wants to create a new note with typed text
+if [ -z "$selection" ]; then
+    read -p "New note name: " selection
+    [ -z "$selection" ] && exit 0
+fi
+
+# Determine file path
+file_path="$folder/$selection.md"
+
+# Create file if it doesn't exist
+if [ ! -f "$file_path" ]; then
+    if [ -n "$template" ] && [ -f "$template" ]; then
+        render_template "$selection" "$template" >"$file_path"
+    else
+        echo -e "# $selection\n\nCreated: $(date '+%Y-%m-%d %H:%M')\n" >"$file_path"
+    fi
+fi
+
+launch "$file_path"
