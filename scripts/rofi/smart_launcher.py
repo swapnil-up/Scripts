@@ -80,13 +80,13 @@ def build_candidates():
     # commands
     items += [
         ",tt          toggle todo",
-        ",t <text>    add todo",
+        ",t",
         ",tr          remove todo",
-        ",p <name>    open project",
-        ",n <name>    obsidian note",
-        ",til <name>    TIL note",
-        ",why <name>    why notes",
-        ",hmm <name>    scratchpad append note",
+        ",p",
+        ",n",
+        ",til",
+        ",why",
+        ",hmm",
         ",w <q>    search the web gh, yt, lb, wiki"
     ]
 
@@ -164,19 +164,11 @@ def dispatch(raw):
 def handle_command(base, sub, rest):
     home = Path.home()
 
-    if base == "tt":
-        subprocess.run([home / "scripts/scripts/rofi/rofi-todo-toggle.sh"])
-
-    elif base == "t":
+    if base in ["t", "tt", "tr", "ta"]:
         if rest:
-            todo = home / ".local/share/todos/todo.txt"
-            todo.parent.mkdir(parents=True, exist_ok=True)
-            with todo.open("a") as f:
-                f.write(f"[ ] {time.strftime('%Y-%m-%d %H:%M')} - {rest}\n")
-            subprocess.run(["notify-send", "✓ Todo added", rest])
-
-    elif base == "tr":
-        subprocess.run([home / "scripts/scripts/rofi/rofi-todo-remove.sh"])
+            subprocess.run([home / "scripts/scripts/rofi/rofi-todo-add.sh", base, rest])
+        else:
+            subprocess.run([home / "scripts/scripts/rofi/rofi-todo-add.sh", base])
 
     elif base == "p":
         if not rest:
@@ -190,9 +182,11 @@ def handle_command(base, sub, rest):
             subprocess.run([home / "scripts/scripts/rofi/rofi-projects.sh"])
 
     elif base in ["n", "til", "why", "hmm"]:
-        subprocess.run([
-            home / "scripts/scripts/rofi/rofi-obsidian.sh", base
-        ])
+        if rest:
+            subprocess.run([home / "scripts/scripts/rofi/rofi-obsidian.sh", base, rest])
+        else:
+            subprocess.run([home / "scripts/scripts/rofi/rofi-obsidian.sh", base])
+
 
 
     elif base == "w":

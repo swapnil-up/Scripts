@@ -11,6 +11,7 @@ profiles[why]="$HOME/notes/why|$HOME/.config/obsidian/templates/why.md|$HOME/scr
 profiles[hmm]="$HOME/scratchpad/hmm.md||1"    # append-only scratchpad
 
 trigger="$1"
+inline="$2"
 [ -z "$trigger" ] && exit 0
 config="${profiles[$trigger]}"
 [ -z "$config" ] && exit 0
@@ -70,12 +71,12 @@ files=$(find "$folder" -maxdepth 1 -type f -name "*.md" \
 
 menu="$files"
 
-# Show rofi menu
-selection=$(echo -e "$menu" | rofi -dmenu -i -p "Obsidian" -matching fuzzy -format "s")
-
-# If empty, assume user wants to create a new note with typed text
-if [ -z "$selection" ]; then
-    read -p "New note name: " selection
+# If inline argument provided, skip rofi and use it
+inline=$(echo "$inline" | xargs)
+if [ -n "$inline" ]; then
+    selection="$inline"
+else
+    selection=$(echo -e "$files" | rofi -dmenu -i -p "Obsidian" -matching fuzzy -format "s")
     [ -z "$selection" ] && exit 0
 fi
 
