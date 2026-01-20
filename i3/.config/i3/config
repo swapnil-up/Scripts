@@ -315,6 +315,8 @@ exec_always --no-startup-id conky -c ~/.config/conky/conky_projects.conf
 exec_always --no-startup-id conky -c ~/.config/conky/conky_todo.conf
 exec_always --no-startup-id conky -c ~/.config/conky/conky_stats.conf
 exec_always --no-startup-id conky -c ~/.config/conky/conky_notes.conf
+exec_always --no-startup-id conky -c ~/.config/conky/conky_year.conf
+exec_always --no-startup-id conky -c ~/.config/conky/conky_quotes.conf
 
 
 
