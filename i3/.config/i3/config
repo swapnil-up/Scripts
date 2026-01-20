@@ -310,8 +310,20 @@ bindsym $mod+n exec --no-startup-id ~/.local/bin/quicknote.sh
 
 # conky
 exec_always --no-startup-id conky -c ~/.config/conky/conky.conf
+# exec_always --no-startup-id i3blocks -c ~/.config/i3blocks/config
 
-bindsym $mod+t exec --no-startup-id ~/rofi/rofi-todo-menu.sh
+#bar {
+#    status_command i3blocks -c ~/.config/i3blocks/config
+#    position top
+#    font pango:JetBrainsMono Nerd Font 11
+#    colors {
+#        background #00000000
+#        statusline #D8DEE9
+#        separator  #4C566A
+#    }
+#}
+
+# bindsym $mod+t exec --no-startup-id ~/rofi/rofi-todo-menu.sh
 # Or individual bindings:
 # bindsym $mod+t exec --no-startup-id ~/scripts/scripts/rofi-todo-add.sh
 # bindsym $mod+shift+t exec --no-startup-id ~/scripts/scripts/rofi-todo-toggle.sh
