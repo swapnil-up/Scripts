@@ -252,7 +252,7 @@ exec --no-startup-id sleep 5 && ~/startup.sh
 
 #Adding a desktop background 
 # exec --no-startup-id nitrogen --restore
-# exec_always --no-startup-id feh --bg-center ~/possessions/Pictures/desktop-wallpapers/let_go.png
+exec_always --no-startup-id feh --bg-center ~/possessions/Pictures/desktop-wallpapers/a_dock_on_the_water.jpeg
 
 # Change wallpaper with a shortcut 
 # bindsym $mod+Shift+w exec --no-startup-id ~/.config/i3/change_wallpaper.sh
@@ -309,7 +309,15 @@ for_window [class="^quicknote_nvim$"] floating enable, sticky enable, border pix
 bindsym $mod+n exec --no-startup-id ~/.local/bin/quicknote.sh
 
 # conky
-exec_always --no-startup-id conky -c ~/.config/conky/conky.conf
+# exec_always --no-startup-id conky -c ~/.config/conky/conky.conf
+
+exec_always --no-startup-id conky -c ~/.config/conky/conky_projects.conf
+exec_always --no-startup-id conky -c ~/.config/conky/conky_todo.conf
+exec_always --no-startup-id conky -c ~/.config/conky/conky_stats.conf
+exec_always --no-startup-id conky -c ~/.config/conky/conky_notes.conf
+
+
+
 # exec_always --no-startup-id i3blocks -c ~/.config/i3blocks/config
 
 #bar {
