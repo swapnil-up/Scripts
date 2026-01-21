@@ -11,3 +11,6 @@ vercel-site
 scripts
  - rofi
  - videos
+
+ wordpress
+ cosmic-python
