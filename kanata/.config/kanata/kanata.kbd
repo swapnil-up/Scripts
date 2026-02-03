@@ -7,7 +7,7 @@
   1 2 3 4 5 6 7 8 9 0 - 
   q w e r t y u i o p
   caps a s d f g h j k l lmet lalt spc ralt rctl
-  x c
+  x c v m , . /
 )
 (defvar
   tap-time 150
@@ -65,14 +65,14 @@
   lmet (tap-hold $tap-time $hold-time ret lmet)
   rmall  (macro C-home C-S-end del home S-end del)
 
-  chd (chord ch_sdf @d)
-  chf (chord ch_sdf @f)
+  ;;chd (chord ch_sdf @d)
+  ;;chf (chord ch_sdf @f)
 
-  chi (chord ch_backspace i)
-  cho (chord ch_backspace o)
+  ;;chi (chord ch_backspace i)
+  ;;cho (chord ch_backspace o)
 
-  chw (chord ch_tab w)
-  che (chord ch_tab e)  
+  ;;chw (chord ch_tab w)
+  ;;che (chord ch_tab e)  
 )
 
 (defalias 
@@ -87,41 +87,63 @@
   i3c (multi lmet c)
 )
 
-(defchords ch_sdf $chord-time
-  (@d   ) @d    
-  (   @f) @f 
-  (@d @f  ) ret
+(defalias
+  ;; movemouse-accel <interval> <accel-time> <min-dist> <max-dist>
+  ;; interval: 10ms (standard for smooth UI)
+  ;; accel-time: 500ms (takes half a second to reach top speed)
+  ;; min-dist: 1 pixel (fine precision)
+  ;; max-dist: 25 pixels (fast travel)
+  
+  mup (movemouse-accel-up 10 500 1 25)
+  mdn (movemouse-accel-down 10 500 1 25)
+  mlft (movemouse-accel-left 10 500 1 25)
+  mrgt (movemouse-accel-right 10 500 1 25)
+
+  ;; Scroll Aliases
+  mwu (mwheel-up 50 120)
+  mwd (mwheel-down 50 120)
+
+  ;; Click Aliases
+  mlc mlft    ;; Left Click
+  mrc mrgt   ;; Right Click
+  mmc mmid  ;; Middle Click (usually scroll wheel click)
 )
 
-(defchords ch_backspace $chord-time
-  (i   ) i    
-  (   o) o    
-  (i o) bspc
-)
-
-(defchords ch_tab $chord-time
-  (w   ) w    
-  (   e) e    
-  (w e) tab
-)
+;;(defchords ch_sdf $chord-time
+;;  (@d   ) @d    
+;;  (   @f) @f 
+;;  (@d @f  ) ret
+;;)
+;;
+;;(defchords ch_backspace $chord-time
+;;  (i   ) i    
+;;  (   o) o    
+;;  (i o) bspc
+;;)
+;;
+;;(defchords ch_tab $chord-time
+;;  (w   ) w    
+;;  (   e) e    
+;;  (w e) tab
+;;)
 
 (deflayer base
   1 2 3 4 5 6 7 8 9 0 - 
-  q @chw @che @r t y @u @chi @cho p
-  @escctrl a @s @chd @chf @g h @j @k @l lalt @lmet @spfn bspc @rescctl
-  x c
+  q w e @r t y @u i o p
+  @escctrl a @s @d @f @g h @j @k @l lalt @lmet @spfn bspc @rescctl
+  x c v m , . /
 )
 
 (deflayer spacefnlayer
-  @1 @2 @3 @4 @5 @6 @7 @8 @9 @0 @-
-  @i3q w e @i3r t home pgdn pgup end @i3p
-  @escctrl a @s @i3d @noti3f @g left down up right lalt lmet spc bspc @rescctl
-  @rmall @i3c
+  @1    @2    @3    @4    @5    @6    @7    @8    @9    @0    @-
+  @i3q  w     e     @i3r  t     home  pgdn  pgup  end   @i3p
+  @escctrl a  @s    @i3d  @noti3f @g left down  up    right lalt @lmet spc bspc @rescctl
+  @mlc  @mmc  @mrc  @mlft @mdn  @mup  @mrgt ;; Mapping x c v m , . /
 )
 
 (deflayer symbollayer
   1 2 3 4 5 6 7 8 9 0 - 
   q w e r t y u i o p
   @escctrl a [ S-9 S-[ + h = - S-/ lalt @lmet spc bspc @rescctl
-  x c
+  x c v m , . /
 )
