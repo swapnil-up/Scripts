@@ -93,10 +93,10 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 # split in horizontal orientation
-bindsym $mod+Shift+v split h
+# bindsym $mod+Shift+v split h
 
 # split in vertical orientation
-bindsym $mod+v split v
+# bindsym $mod+v split v
 
 # Quickly toggle layout with 'space'
 bindsym $mod+space layout toggle split
@@ -245,7 +245,7 @@ bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
 # remove a floating window from scratchpad
-bindsym $mod+x floating disable; floating enable
+# bindsym $mod+x floating disable; floating enable
 
 #custom start script
 exec --no-startup-id sleep 5 && ~/startup.sh
@@ -284,7 +284,7 @@ exec --no-startup-id clipmenud
 # bindsym $mod+c exec --no-startup-id clipmenu
 # exec --no-startup-id cliphist daemon
 # bindsym $mod+c exec --no-startup-id bash -c 'cliphist list | rofi -dmenu | cliphist decode | xclip -selection clipboard'
-bindsym $mod+c exec --no-startup-id env CM_SELECTIONS=clipboard CM_LAUNCHER=rofi clipmenu -p "Clipboard History:"
+bindsym $mod+v exec --no-startup-id env CM_SELECTIONS=clipboard CM_LAUNCHER=rofi clipmenu -p "Clipboard History:"
 
 
 
@@ -338,3 +338,10 @@ exec_always --no-startup-id conky -c ~/.config/conky/conky_quotes.conf
 # bindsym $mod+t exec --no-startup-id ~/scripts/scripts/rofi-todo-add.sh
 # bindsym $mod+shift+t exec --no-startup-id ~/scripts/scripts/rofi-todo-toggle.sh
 # bindsym $mod+ctrl+t exec --no-startup-id ~/scripts/scripts/rofi-todo-remove.sh
+
+# Open VS Code
+bindsym $mod+c exec --no-startup-id code
+
+# Open mpv in a floating window
+ for_window [class="mpv"] floating enable
+bindsym $mod+y exec --no-startup-id mpv --player-operation-mode=pseudo-gui
