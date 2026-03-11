@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
+set -e
 
 # Ask for sudo upfront and keep it alive
 sudo -v
@@ -38,15 +39,19 @@ sudo usermod -aG uinput $USER
 echo 'KERNEL=="uinput", MODE="0660", GROUP="uinput", OPTIONS+="static_node=uinput"' | sudo tee /etc/udev/rules.d/99-input.rules
 
 # Ensure the install scripts are executable
-chmod +x "$SCRIPT_DIR/install/languages.sh"
-chmod +x "$SCRIPT_DIR/install/packages.sh"
+chmod +x "$SCRIPT_DIR/languages.sh"
+chmod +x "$SCRIPT_DIR/packages.sh"
 
 # Execute them
-"$SCRIPT_DIR/install/packages.sh"
-"$SCRIPT_DIR/install/languages.sh"
+"$SCRIPT_DIR/languages.sh"
+"$SCRIPT_DIR/packages.sh"
+
 
 # --- 5. The Stow Phase ---
 echo "Linking configurations with Stow..."
+
+mv ~/.bashrc ~/.bashrc.bak
+mv ~/.profile ~/.profile.bak
 
 # Find the configs directory relative to the script
 CONFIG_DIR="$(cd "$SCRIPT_DIR/../config" && pwd)"

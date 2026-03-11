@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+set -e
 
 echo "--- Running Language/Runtime Installer ---"
 

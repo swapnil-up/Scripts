@@ -1,0 +1,16 @@
+Kanata config and putting in systemd
+
+mkdir -p ~/.config/systemd/user/
+
+swap  ~  13:15  nano ~/.config/systemd/user/kanata.service
+Command 'edit' not found, but can be installed with:
+sudo apt install mailcap
+
+swap  ~  13:15  gedit ~/.config/systemd/user/kanata.service
+
+swap  ~  13:15  systemctl --user daemon-reload
+
+swap  ~  13:16  systemctl --user enable kanata.service
+Created symlink /home/swap/.config/systemd/user/default.target.wants/kanata.service → /home/swap/.config/systemd/user/kanata.service.
+
+swap  ~  13:16  systemctl --user start kanata.service

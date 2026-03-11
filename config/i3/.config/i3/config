@@ -65,7 +65,7 @@ bindsym $mod+q kill
 # .desktop file. It is a wrapper around dmenu, so you need that installed.
 # bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
 # bindsym $mod+d exec --no-startup-id rofi -show drun
-bindsym $mod+d exec --no-startup-id bash ~/scripts/scripts/rofi/rofi-smart-launcher.sh
+bindsym $mod+d exec --no-startup-id bash ~/github/scripts/scripts/rofi/rofi-smart-launcher.sh
 bindsym $mod+Tab exec --no-startup-id rofi -show window
 
 # change focus
@@ -289,7 +289,7 @@ bindsym $mod+v exec --no-startup-id env CM_SELECTIONS=clipboard CM_LAUNCHER=rofi
 
 
 # tap to click touchpad
-exec xinput set-prop "DELL083C:00 04F3:3088 Touchpad" "libinput Tapping Enabled" 1
+exec --no-startup-id xinput set-prop "$(xinput list --name-only | grep -i 'touchpad' | head -n1)" "libinput Tapping Enabled" 1
 
 #remove window headers
 for_window [class="^.*"] border pixel 2
@@ -335,9 +335,9 @@ exec_always --no-startup-id conky -c ~/.config/conky/conky_quotes.conf
 
 # bindsym $mod+t exec --no-startup-id ~/rofi/rofi-todo-menu.sh
 # Or individual bindings:
-# bindsym $mod+t exec --no-startup-id ~/scripts/scripts/rofi-todo-add.sh
-# bindsym $mod+shift+t exec --no-startup-id ~/scripts/scripts/rofi-todo-toggle.sh
-# bindsym $mod+ctrl+t exec --no-startup-id ~/scripts/scripts/rofi-todo-remove.sh
+# bindsym $mod+t exec --no-startup-id ~/github/scripts/scripts/rofi-todo-add.sh
+# bindsym $mod+shift+t exec --no-startup-id ~/github/scripts/scripts/rofi-todo-toggle.sh
+# bindsym $mod+ctrl+t exec --no-startup-id ~/github/scripts/scripts/rofi-todo-remove.sh
 
 # Open VS Code
 bindsym $mod+c exec --no-startup-id code
