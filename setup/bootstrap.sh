@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
-set -e
 
 # Ask for sudo upfront and keep it alive
 sudo -v

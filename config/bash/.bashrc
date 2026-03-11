@@ -135,9 +135,6 @@ alias cls='clear'
 alias apt-get='sudo apt-get'
 alias multitail='multitail --no-repeat -c'
 alias freshclam='sudo freshclam'
-alias vi='nvim'
-alias svi='sudo vi'
-alias vis='nvim "+set si"'
 
 
 # Change directory aliases
@@ -636,7 +633,7 @@ export PATH="$PATH":"$HOME/.pub-cache/bin"
 
 
 
-source ~/.local/share/blesh/ble.sh
+# source ~/.local/share/blesh/ble.sh
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -662,4 +659,4 @@ export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init - bash)"
 
-source /home/swap/github/alacritty/extra/completions/alacritty.bash
+# source /home/swap/github/alacritty/extra/completions/alacritty.bash

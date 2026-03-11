@@ -5,9 +5,9 @@
 declare -A profiles
 
 # trigger => "folder|template_file|single_file_flag"
-profiles[n]="$HOME/obsidian-vault|$HOME/scripts/scripts/template/obsidian.md|"            # new notes in vault root
-profiles[til]="$HOME/github/coding-problems/learning-notes/TIL|$HOME/scripts/scripts/template/til.md|"  # quick snippets
-profiles[why]="$HOME/notes/why|$HOME/.config/obsidian/templates/why.md|$HOME/scripts/scripts/template/why.md"  # why notes
+profiles[n]="$HOME/obsidian-vault|$HOME/github/scripts/scripts/template/obsidian.md|"            # new notes in vault root
+profiles[til]="$HOME/github/coding-problems/learning-notes/TIL|$HOME/github/scripts/scripts/template/til.md|"  # quick snippets
+profiles[why]="$HOME/notes/why|$HOME/.config/obsidian/templates/why.md|$HOME/github/scripts/scripts/template/why.md"  # why notes
 profiles[hmm]="$HOME/scratchpad/hmm.md||1"    # append-only scratchpad
 
 trigger="$1"

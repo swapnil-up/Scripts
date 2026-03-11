@@ -9,9 +9,9 @@
 - [ ] put systemd in config
 - [ ] put vscode in config
 - [ ] maybe put firefox in config
-- [ ] 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ] add in espanso, sweet sweet ;gac
+- [ ] keep docker, dbeaver, postgres, mysql
+- [ ] install zsh, ohmyzsh and autocomplete. 
+- [ ] install nerdfonts
 - [ ] 
 - [ ] 
