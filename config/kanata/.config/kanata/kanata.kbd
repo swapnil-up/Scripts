@@ -7,7 +7,7 @@
   1 2 3 4 5 6 7 8 9 0 - 
   q w e r t y u i o p
   caps a s d f g h j k l lmet lalt spc ralt rctl
-  x c v m , . /
+  x c v n m , . /
 )
 (defvar
   tap-time 150
@@ -131,19 +131,19 @@
   1 2 3 4 5 6 7 8 9 0 - 
   q w e @r t y @u i o p
   @escctrl a @s @d @f @g h @j @k @l lalt @lmet @spfn bspc @rescctl
-  x c v m , . /
+  x c v n m , . /
 )
 
 (deflayer spacefnlayer
   @1    @2    @3    @4    @5    @6    @7    @8    @9    @0    @-
   @i3q  w     e     @i3r  t     home  pgdn  pgup  end   @i3p
   @escctrl a  @s    @i3d  @noti3f @g left down  up    right lalt @lmet spc bspc @rescctl
-  @mlc  @mmc  @mrc  @mlft @mdn  @mup  @mrgt ;; Mapping x c v m , . /
+  @mlc  @mmc  @mrc  @mlft @mdn  @mup  @mrgt / ;; Mapping x c v m , . /
 )
 
 (deflayer symbollayer
   1 2 3 4 5 6 7 8 9 0 - 
   q w e r t y u i o p
   @escctrl a [ S-9 S-[ + h = - S-/ lalt @lmet spc bspc @rescctl
-  x c v m , . /
+  x c v n m , . /
 )

@@ -301,6 +301,13 @@ for_window [class="^.*"] client.focused          #77dd77 #285577 #ffffff #2e9ef4
 bindsym $mod+Shift+greater move container to output right
 bindsym $mod+Shift+less move container to output left
 
+# Focus the monitor to the left/right
+bindsym $mod+greater focus output right
+bindsym $mod+less focus output left
+
+# Move the current workspace to the monitor on the right/left
+bindsym $mod+Control+greater move workspace to output right
+bindsym $mod+Control+less move workspace to output left
 
 # Scratchpad window for quick notes
 for_window [class="^quicknote_nvim$"] floating enable, sticky enable, border pixel 1, resize set 800 600, move position center, scratchpad show
