@@ -1,0 +1,151 @@
+{
+  "editor.mouseWheelZoom": true,
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {},
+  "dart.flutterSdkPath": "/usr/bin/flutter",
+  "dart.debugExternalPackageLibraries": false,
+  "dart.debugSdkLibraries": false,
+  "explorer.confirmDelete": false,
+  "explorer.confirmPasteNative": false,
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "liveServer.settings.AdvanceCustomBrowserCmdLine": "firefox --new-window",
+  "liveServer.settings.donotShowInfoMsg": true,
+  "json.schemas": [],
+  "explorer.confirmDragAndDrop": false,
+  "workbench.startupEditor": "none",
+  "[php]": {
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+  },
+  "css.lint.unknownAtRules": "ignore",
+  "editor.minimap.enabled": false,
+  "codeium.disableSupercomplete": false,
+  "terminal.integrated.enableMultiLinePasteWarning": "never",
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "diffEditor.ignoreTrimWhitespace": false,
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar",
+  },
+  "editor.pasteAs.preferences": [],
+  "diffEditor.ignoreTrimWhitespace": true,
+  "search.collapseResults": "alwaysCollapse",
+
+  "editor.lineNumbers": "relative",
+  "editor.cursorSurroundingLines": 8,
+  "vim.easymotion": true,
+  "vim.disableExtension": true,
+  "vim.incsearch": true,
+  "vim.useSystemClipboard": true,
+  "vim.hlsearch": true,
+  "vim.insertModeKeyBindings": [
+    {
+      "before": ["j", "j"],
+      "after": ["<Esc>"],
+    },
+    {
+      "before": ["k", "k"],
+      "after": ["<Esc>"],
+    },
+  ],
+  "vim.leader": "<space>",
+  "vim.handleKeys": {
+    "<C-a>": false,
+    "<C-f>": false,
+    "<C-p>": false,
+    "<C-b>": false,
+  },
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": [":"],
+      "commands": ["workbench.action.showCommands"],
+    },
+    // NAVIGATION
+    // switch b/w buffers
+    { "before": ["<S-h>"], "commands": [":bprevious"] },
+    { "before": ["<S-l>"], "commands": [":bnext"] },
+
+    // splits
+    { "before": ["leader", "v"], "commands": [":vsplit"] },
+    { "before": ["leader", "s"], "commands": [":split"] },
+
+    // panes
+    {
+      "before": ["leader", "h"],
+      "commands": ["workbench.action.focusLeftGroup"],
+    },
+    {
+      "before": ["leader", "j"],
+      "commands": ["workbench.action.focusBelowGroup"],
+    },
+    {
+      "before": ["leader", "k"],
+      "commands": ["workbench.action.focusAboveGroup"],
+    },
+    {
+      "before": ["leader", "l"],
+      "commands": ["workbench.action.focusRightGroup"],
+    },
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "before": [">"],
+      "commands": ["editor.action.indentLines"],
+    },
+    {
+      "before": ["<"],
+      "commands": ["editor.action.outdentLines"],
+    },
+    {
+      "before": ["p"],
+      "after": ["p", "g", "v", "y"],
+    },
+  ],
+  "vim.statusBarColorControl": true,
+  "vim.statusBarColors.normal": ["#8FBCBB", "#000"],
+  "vim.statusBarColors.insert": ["#BF616A", "#000"],
+  "vim.statusBarColors.visual": ["#B48EAD", "#000"],
+  "vim.statusBarColors.visualline": ["#B48EAD", "#000"],
+  "vim.statusBarColors.visualblock": ["#A3BE8C", "#000"],
+  "vim.statusBarColors.replace": "#D08770",
+  "vim.statusBarColors.commandlineinprogress": "#007ACC",
+  "vim.statusBarColors.searchinprogressmode": "#007ACC",
+  "vim.statusBarColors.easymotionmode": "#007ACC",
+  "vim.statusBarColors.easymotioninputmode": "#007ACC",
+  "vim.statusBarColors.surroundinputmode": "#007ACC",
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#8FBCBB",
+    "statusBar.noFolderBackground": "#8FBCBB",
+    "statusBar.debuggingBackground": "#8FBCBB",
+    "statusBar.foreground": "#000",
+    "statusBar.debuggingForeground": "#000"
+  },
+  "python.createEnvironment.trigger": "off",
+  "github.copilot.enable": {
+    "*": false,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false,
+    "css": false,
+  },
+  "python.defaultInterpreterPath": "/bin/python3",
+  "github.copilot.nextEditSuggestions.enabled": false,
+  "terminal.integrated.stickyScroll.enabled": false,
+  "git.openRepositoryInParentFolders": "never",
+  "terminal.external.linuxExec": "alacritty",
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
+  "files.autoSave": "afterDelay",
+  "python.analysis.typeCheckingMode": "basic",
+  "telemetry.telemetryLevel": "off",
+  "leetcode.workspaceFolder": "/home/swap/github/coding-problems/leetcode",
+  "leetcode.hint.configWebviewMarkdown": false,
+  "leetcode.hint.commandShortcut": false,
+  "leetcode.hint.commentDescription": false,
+  "svelte.enable-ts-plugin": true,
+  "editor.stickyScroll.enabled": false,
+  "leetcode.defaultLanguage": "python3",
+}

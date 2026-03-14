@@ -82,7 +82,7 @@
   i3g (multi lmet g)
   i3ret (multi lmet ret)
 ;;  i3f (tap-hold $tap-time $hold-time (multi lmet f) lsft)
-  noti3f (tap-hold $tap-time $hold-time ret lsft)
+  noti3f (tap-hold $tap-time $hold-time ret lctl)
   i3p (multi lmet p)
   i3c (multi lmet c)
 )
@@ -138,7 +138,7 @@
   @1    @2    @3    @4    @5    @6    @7    @8    @9    @0    @-
   @i3q  w     e     @i3r  t     home  pgdn  pgup  end   @i3p
   @escctrl a  @s    @i3d  @noti3f @g left down  up    right lalt @lmet spc bspc @rescctl
-  @mlc  @mmc  @mrc  @mlft @mdn  @mup  @mrgt / ;; Mapping x c v m , . /
+  x  @mlc  @mrc  @mlft @mdn  @mup  @mrgt / 
 )
 
 (deflayer symbollayer

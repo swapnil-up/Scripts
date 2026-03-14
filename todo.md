@@ -1,17 +1,21 @@
 - [ ] break install packages into one for apt, then others distinctly 
 - [ ] maybe use obsidian docker image
-- [ ] fix bashrc stow conflict. Should move existing and add new
-- [ ] add packages for npm, pyenv, trash-cli, gedit
+- [ X ] fix bashrc stow conflict. Should move existing and add new
+- [ X ] add packages for npm, pyenv, trash-cli, gedit
 - [ ] fix kanata install including usergroup and systemd
 - [ ] remove lazyvim, let's do kickstart and our stuff
 - [ ] i3wm xinput touchpad name is different. Either make variable, or find how to put variable in git config
-- [ ] fix path of scripts to use ~/github/scripts
-- [ ] put systemd in config
-- [ ] put vscode in config
-- [ ] maybe put firefox in config
+- [ X ] fix path of scripts to use ~/github/scripts
+- [iX ] put vscode in configb
 - [ ] add in espanso, sweet sweet ;gac
 - [ ] keep docker, dbeaver, postgres, mysql
 - [ ] install zsh, ohmyzsh and autocomplete. 
 - [ ] install nerdfonts
+- [ X ] kanata change space layer f hold to ctrl instead of the mistaken shift
+- [ ] 
+- [ ] 
+- [ ] 
+- [ ] 
+- [ ] 
 - [ ] 
 - [ ] 
