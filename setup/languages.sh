@@ -6,7 +6,13 @@ echo "--- Running Language/Runtime Installer ---"
 sudo apt install -y build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev pkg-config
 
 sudo apt install -y python3-pip python3-venv python3-full
-curl https://pyenv.run | bash
+
+if [ ! -d "$HOME/.pyenv" ]; then
+    echo "Installing Pyenv..."
+    curl https://pyenv.run | bash
+else
+    echo "Pyenv already installed, skipping..."
+fi
 
 # Install NVM (Node Version Manager) if missing
 if [ ! -d "$HOME/.nvm" ]; then

@@ -59,12 +59,26 @@ if ! command -v kanata &> /dev/null; then
 fi
 
 # --- 4. Obsidian (Flatpak) ---
-if ! command -v flatpak &> /dev/null; then 
-    sudo apt install -y flatpak
+echo "--- Installing Flatpak Apps ---"
+
+# 1. Ensure we use the native binary, not the snap version
+if command -v snap &> /dev/null && snap list | grep -q "^flatpak "; then
+    sudo snap remove flatpak
 fi
 
-# ADDED: Introduce system to Flathub store
+sudo apt install -y flatpak
+
+# 2. Add Flathub
 sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
-# Install Obsidian
-flatpak install flathub md.obsidian.Obsidian -y
+# 3. Install Obsidian
+if ! flatpak list | grep -q "md.obsidian.Obsidian"; then
+    echo "Installing Obsidian..."
+    flatpak install flathub md.obsidian.Obsidian -y
+fi
+
+# 4. Fix paths for the current session so Rofi/i3 can see the app immediately
+flatpak_exports="$HOME/.local/share/flatpak/exports/share"
+if [[ ":$XDG_DATA_DIRS:" != *":$flatpak_exports:"* ]]; then
+    export XDG_DATA_DIRS="$flatpak_exports:$XDG_DATA_DIRS"
+fi

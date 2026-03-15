@@ -49,23 +49,59 @@ chmod +x "$SCRIPT_DIR/packages.sh"
 # --- 5. The Stow Phase ---
 echo "Linking configurations with Stow..."
 
-mv ~/.bashrc ~/.bashrc.bak
-mv ~/.profile ~/.profile.bak
-
 # Find the configs directory relative to the script
 CONFIG_DIR="$(cd "$SCRIPT_DIR/../config" && pwd)"
 
 # Change directory to the configs folder
 cd "$CONFIG_DIR"
 
-# Loop through every directory inside 'configs/' and stow it
 for folder in */; do
-    folder=${folder%/} # Remove trailing slash
+    folder=${folder%/}
+    if [ -d "$folder/.config" ]; then
+        TARGET="$HOME/.config/$folder"
+    else
+        # For things like bash, it's usually ~/.bashrc, but stow handles the dot
+        TARGET="$HOME/.$folder"
+    fi
+
+    if [ -e "$TARGET" ] || [ -L "$TARGET" ]; then
+        CURRENT_LINK=$(readlink -f "$TARGET" 2>/dev/null || echo "")
+        if [[ "$CURRENT_LINK" != *"/github/scripts/"* ]]; then
+            echo "  [CLEANUP] Removing conflicting target: $TARGET"
+            rm -rf "$TARGET"
+        fi
+    fi
+
+    # 3. Now Stow should have a perfectly empty path to link into
     echo "  [LINK] Stowing $folder..."
-    
-    # -R: Restow (handles existing links)
-    # -t ~: Target the home directory
     stow -R -t "$HOME" "$folder"
 done
+
+
+FONT_NAME="JetBrainsMono" # Change this to your preference
+FONT_DIR="$HOME/.local/share/fonts"
+VERSION="v3.4.0"
+
+if ! fc-list | grep -qi "$FONT_NAME"; then
+    echo "--- Installing $FONT_NAME Nerd Font ---"
+    
+    mkdir -p "$FONT_DIR"
+    TEMP_DIR=$(mktemp -d)
+    
+    # Download only the specific font zip
+    curl -L "https://github.com/ryanoasis/nerd-fonts/releases/download/${VERSION}/${FONT_NAME}.zip" -o "$TEMP_DIR/$FONT_NAME.zip"
+    
+    # Unzip into the local fonts directory
+    unzip "$TEMP_DIR/$FONT_NAME.zip" -d "$FONT_DIR"
+    
+    # Cleanup
+    rm -rf "$TEMP_DIR"
+    
+    # Refresh font cache
+    echo "Refreshing font cache..."
+    fc-cache -f
+else
+    echo "--- $FONT_NAME Nerd Font already exists, skipping ---"
+fi
 
 echo "Setup complete! Restart your shell."
