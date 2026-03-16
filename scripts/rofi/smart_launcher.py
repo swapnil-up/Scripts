@@ -8,6 +8,7 @@ import subprocess
 import time
 from pathlib import Path
 from configparser import ConfigParser
+from datetime import datetime
 
 try:
     from rapidfuzz import fuzz
@@ -79,14 +80,16 @@ def build_candidates():
 
     # commands
     items += [
+        "./           <cmd> "
         ",tt          toggle todo",
         ",t",
         ",tr          remove todo",
-        ",p",
+        # ",p",
         ",n",
         ",til",
         ",why",
         ",hmm",
+        ",mf",
         ",w <q>    search the web gh, yt, lb, wiki"
     ]
 
@@ -127,6 +130,12 @@ def dispatch(raw):
         return
 
     raw = raw.strip()
+
+    # 1. SHELL MODE 
+    if raw.startswith("./"):
+        cmd = raw[2:].strip() # Strip the './'
+        handle_bash(cmd)
+        return
 
     # COMMAND MODE
     if raw.startswith(","):
@@ -170,16 +179,16 @@ def handle_command(base, sub, rest):
         else:
             subprocess.run([home / "github/scripts/scripts/rofi/rofi-todo-add.sh", base])
 
-    elif base == "p":
-        if not rest:
-            subprocess.run([home / "github/scripts/scripts/rofi/rofi-projects.sh"])
-        else:
-            for d in ["github", "github/work", "github/side-hustle"]:
-                path = home / d / rest
-                if path.exists():
-                    subprocess.run(["code", str(path)])
-                    return
-            subprocess.run([home / "github/scripts/scripts/rofi/rofi-projects.sh"])
+    # elif base == "p":
+    #     if not rest:
+    #         subprocess.run([home / "github/scripts/scripts/rofi/rofi-projects.sh"])
+    #     else:
+    #         for d in ["github", "github/work", "github/side-hustle"]:
+    #             path = home / d / rest
+    #             if path.exists():
+    #                 subprocess.run(["code", str(path)])
+    #                 return
+    #         subprocess.run([home / "github/scripts/scripts/rofi/rofi-projects.sh"])
 
     elif base in ["n", "til", "why", "hmm"]:
         if rest:
@@ -187,6 +196,8 @@ def handle_command(base, sub, rest):
         else:
             subprocess.run([home / "github/scripts/scripts/rofi/rofi-obsidian.sh", base])
 
+    elif base == "mf":
+        log_annoying()
 
 
     elif base == "w":
@@ -206,6 +217,47 @@ def handle_command(base, sub, rest):
 
     else:
         subprocess.run(["notify-send", "Unknown command", f",{base}"])
+
+
+def log_annoying():
+    file = Path.home() / "notes/annoying.log"
+    file.parent.mkdir(parents=True, exist_ok=True)
+
+    entry = subprocess.run(
+        ["rofi", "-dmenu", "-p", "annoying…", "-lines", "0"],
+        capture_output=True,
+        text=True
+    ).stdout.strip()
+
+    if not entry:
+        return
+
+    with open(file, "a") as f:
+        f.write(f"{datetime.now():%Y-%m-%d %H:%M} – {entry}\n")
+
+    subprocess.run(["notify-send", "Logged annoyance", entry])
+
+
+def handle_bash(cmd):
+    """Executes a string as a bash command and notifies the user of the result."""
+    try:
+        process = subprocess.run(
+            cmd, 
+            shell=True, 
+            executable="/bin/bash", 
+            capture_output=True, 
+            text=True
+        )
+        
+        if process.returncode == 0:
+            output = process.stdout.strip() or "Command executed successfully."
+            subprocess.run(["notify-send", "Bash Success", output[:100]]) 
+        else:
+            error = process.stderr.strip() or "Unknown error"
+            subprocess.run(["notify-send", "-u", "critical", "Bash Error", error[:100]])
+            
+    except Exception as e:
+        subprocess.run(["notify-send", "Execution Failed", str(e)])
 
 
 
