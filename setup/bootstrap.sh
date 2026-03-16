@@ -78,11 +78,12 @@ for folder in */; do
 done
 
 
-FONT_NAME="JetBrainsMono" # Change this to your preference
+FONT_NAME="JetBrainsMono" 
 FONT_DIR="$HOME/.local/share/fonts"
+CHECK_FILE="$FONT_DIR/JetBrainsMonoNerdFont-Regular.ttf"
 VERSION="v3.4.0"
 
-if ! fc-list | grep -qi "$FONT_NAME"; then
+if [ ! -f "$CHECK_FILE" ]; then
     echo "--- Installing $FONT_NAME Nerd Font ---"
     
     mkdir -p "$FONT_DIR"
@@ -92,7 +93,7 @@ if ! fc-list | grep -qi "$FONT_NAME"; then
     curl -L "https://github.com/ryanoasis/nerd-fonts/releases/download/${VERSION}/${FONT_NAME}.zip" -o "$TEMP_DIR/$FONT_NAME.zip"
     
     # Unzip into the local fonts directory
-    unzip "$TEMP_DIR/$FONT_NAME.zip" -d "$FONT_DIR"
+    unzip -o "$TEMP_DIR/$FONT_NAME.zip" -d "$FONT_DIR"
     
     # Cleanup
     rm -rf "$TEMP_DIR"

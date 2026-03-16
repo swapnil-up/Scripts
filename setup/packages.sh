@@ -7,8 +7,8 @@ echo "--- Running Package Installer ---"
 echo "Checking external repositories..."
 
 # Neovim PPA
-if ! grep -q "neovim-ppa" /etc/apt/sources.list.d/* 2>/dev/null; then
-    sudo add-apt-repository ppa:neovim-ppa/stable -y
+if ! grep -q "neovim-ppa/unstable" /etc/apt/sources.list.d/* 2>/dev/null; then
+    sudo add-apt-repository ppa:neovim-ppa/unstable -y
 fi
 
 # Fastfetch PPA
