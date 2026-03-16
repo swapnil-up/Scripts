@@ -280,13 +280,11 @@ exec --no-startup-id ~/scripts/battery-notifier.sh
 exec --no-startup-id ~/scripts/resource-monitor.sh
 
 #clipboard
-exec --no-startup-id clipmenud
+exec --no-startup-id CM_SELECTIONS=clipboard clipmenud
 # bindsym $mod+c exec --no-startup-id clipmenu
 # exec --no-startup-id cliphist daemon
 # bindsym $mod+c exec --no-startup-id bash -c 'cliphist list | rofi -dmenu | cliphist decode | xclip -selection clipboard'
-bindsym $mod+v exec --no-startup-id env CM_SELECTIONS=clipboard CM_LAUNCHER=rofi clipmenu -p "Clipboard History:"
-
-
+bindsym $mod+v exec --no-startup-id env CM_SELECTIONS=clipboard CM_LAUNCHER=rofi clipmenu -i -p "Clipboard History:"
 
 # tap to click touchpad
 exec --no-startup-id xinput set-prop "$(xinput list --name-only | grep -i 'touchpad' | head -n1)" "libinput Tapping Enabled" 1

@@ -15,7 +15,7 @@
 
 
 - [ ] get treesitter-cli from rust for kickstart
-- [ ] 
+- [ ] add shift ralt to do delete instead of backspace
 - [ ] 
 - [ ] 
 - [ ] 
