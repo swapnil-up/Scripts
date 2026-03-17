@@ -82,3 +82,24 @@ flatpak_exports="$HOME/.local/share/flatpak/exports/share"
 if [[ ":$XDG_DATA_DIRS:" != *":$flatpak_exports:"* ]]; then
     export XDG_DATA_DIRS="$flatpak_exports:$XDG_DATA_DIRS"
 fi
+
+# --- 5. Clipmenu (Build from Source) ---
+if ! command -v clipmenu &> /dev/null; then
+    echo "Installing clipmenu from source..."
+    
+    # Install build/runtime dependencies
+    sudo apt install -y xsel xclip libextutils-pkgconfig-perl libx11-dev libxfixes-dev
+    # Clone to /tmp so it's wiped on reboot
+    TEMP_DIR=$(mktemp -d)
+    git clone https://github.com/cdown/clipmenu.git "$TEMP_DIR"
+    
+    # Build and Install
+    # By default, 'make install' puts them in /usr/local/bin
+    cd "$TEMP_DIR"
+    sudo make install
+    
+    # Cleanup is handled automatically by using a temp dir, 
+    # but let's be explicit:
+    rm -rf "$TEMP_DIR"
+    echo "clipmenu installed and source removed."
+fi
