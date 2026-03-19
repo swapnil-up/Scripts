@@ -4,6 +4,38 @@ import sys
 import os
 import json
 
+VEDIT_DIR = os.path.expanduser("~/vedit")
+
+
+def get_vedit_dir():
+    """Return the vedit data directory, creating it if needed."""
+    os.makedirs(VEDIT_DIR, exist_ok=True)
+    return VEDIT_DIR
+
+
+def sidecar_path(input_file, extension):
+    """
+    Return the path for a sidecar file in ~/vedit/.
+    e.g. sidecar_path('/some/path/myvideo.mp4', 'markers.json')
+         -> '~/vedit/myvideo.markers.json'
+    """
+    stem = os.path.splitext(os.path.basename(input_file))[0]
+    return os.path.join(get_vedit_dir(), f"{stem}.{extension}")
+
+
+def auto_output_path(input_file, suffix, ext=None):
+    """
+    Build an auto-generated output path next to the input file.
+    e.g. auto_output_path('/some/path/myvideo.mp4', 'cut')
+         -> '/some/path/myvideo_cut.mp4'
+    """
+    directory = os.path.dirname(os.path.abspath(input_file))
+    stem = os.path.splitext(os.path.basename(input_file))[0]
+    if ext is None:
+        ext = os.path.splitext(input_file)[1].lstrip('.')
+    return os.path.join(directory, f"{stem}_{suffix}.{ext}")
+
+
 def run_ffmpeg(cmd, show_progress=True):
     """Execute ffmpeg command and handle errors"""
     if show_progress:

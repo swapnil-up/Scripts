@@ -73,8 +73,27 @@ Included in `scripts/editor/utils.py`:
 
 ## Workflow Example
 
-1. Mark cut points → process cuts → mark text → process text.
-2. Use the output for final exports, GIF creation, or social media sharing.
+# 1. Check what you're working with
+python3 info.py raw_workout.mp4
+
+# 2. Mark the boring bits to remove
+python3 cut_marker.py raw_workout.mp4
+#   → ~/vedit/raw_workout.markers.json
+
+# 3. Cut them out
+python3 process_cuts.py raw_workout.mp4
+#   → raw_workout_cut.mp4  (next to the input)
+
+# 4. Mark where text should appear
+python3 text_marker.py raw_workout_cut.mp4
+#   → ~/vedit/raw_workout_cut.texts.json
+
+# 5. Burn the text in
+python3 process_text.py raw_workout_cut.mp4
+#   → raw_workout_cut_text.mp4
+
+# 6. Make a GIF of the highlight moment
+python3 gif.py raw_workout_cut_text.mp4 highlight.gif --start 42 --duration 6 --quality high
 
 ## Notes
 
