@@ -65,6 +65,8 @@
   lmet (tap-hold $tap-time $hold-time ret lmet)
   rmall  (macro C-home C-S-end del home S-end del)
 
+  bspcdel (fork bspc del (lsft rsft))
+
   ;;chd (chord ch_sdf @d)
   ;;chf (chord ch_sdf @f)
 
@@ -77,6 +79,7 @@
 
 (defalias 
   i3q (multi lmet q)
+  i3e tab
   i3r (multi lmet r)
   i3d (tap-hold $tap-time $hold-time (multi lmet d) lsft)
   i3g (multi lmet g)
@@ -130,14 +133,14 @@
 (deflayer base
   1 2 3 4 5 6 7 8 9 0 - 
   q w e @r t y @u i o p
-  @escctrl a @s @d @f @g h @j @k @l lalt @lmet @spfn bspc @rescctl
+  @escctrl a @s @d @f @g h @j @k @l lalt @lmet @spfn @bspcdel @rescctl
   x c v n m , . /
 )
 
 (deflayer spacefnlayer
   @1    @2    @3    @4    @5    @6    @7    @8    @9    @0    @-
-  @i3q  w     e     @i3r  t     home  pgdn  pgup  end   @i3p
-  @escctrl a  @s    @i3d  @noti3f @g left down  up    right lalt @lmet spc bspc @rescctl
+  @i3q  w     @i3e     @i3r  t     home  pgdn  pgup  end   @i3p
+  @escctrl a  @s    @i3d  @noti3f @g left down  up    right lalt @lmet spc @bspcdel @rescctl
   x  @mlc  @mrc  @mlft @mdn  @mup  @mrgt / 
 )
 
