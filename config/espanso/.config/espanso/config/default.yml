@@ -45,3 +45,13 @@ filters:
       matches: F24
     prevent: true
 
+# backend: Clipboard
+# typing_speed: 10
+
+extra:
+  # This adds a tiny delay (in ms) after deleting the trigger 
+  # but before typing the expansion.
+  # backspace_delay: 50
+  
+  # This ensures the trigger is fully removed before injecting
+  # x11_wait_for_bitmaps: true

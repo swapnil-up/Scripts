@@ -29,6 +29,8 @@ matches:
 
   - trigger: ";em"
     replace: "swapnilupadhyaykharel@gmail.com"
+    force_clipboard: true
+    clipboard_threshold: 0
 
   - trigger: ":lenny"
     replace: "{{output}}"
@@ -36,4 +38,4 @@ matches:
       - name: output
         type: shell
         params:
-          cmd: 'echo -e "(づᵔ◡ᵔ)づ\nツ\n¯\\_(ツ)_/¯\n(╯°□°）╯︵ ┻━┻" | rofi -dmenu -p "Lenny"'
+          cmd: 'cat ~/.config/espanso/lennys.txt | rofi -dmenu -p "Lenny" -i | awk -F "|" "{print \$3}" | sed "s/^[ \t]*//;s/[ \t]*$//"'
