@@ -38,11 +38,6 @@
     "when": "filesExplorerFocus && !inputFocus"
   },
   {
-    "key": "shift+n",
-    "command": "explorer.newFolder",
-    "when": "explorerViewletFocus"
-  },
-  {
     "key": "ctrl+shift+n",
     "command": "workbench.action.newWindow",
     "when": "!explorerViewletFocus"
@@ -97,12 +92,16 @@
     "when": "inSearchEditor || searchViewletFocus"
   },
   {
-    "key": "ctrl+shift+space",
+    "key": "ctrl+space",
     "command": "-editor.action.triggerParameterHints",
     "when": "editorHasSignatureHelpProvider && editorTextFocus"
   },
   {
     "key": "ctrl+shift+space",
     "command": "toggleVim"
+  },
+  {
+    "key": "shift+delete",
+    "command": "-editor.action.clipboardCutAction"
   }
 ]
