@@ -103,3 +103,26 @@ if ! command -v clipmenu &> /dev/null; then
     rm -rf "$TEMP_DIR"
     echo "clipmenu installed and source removed."
 fi
+
+# --- Espanso (AppImage) ---
+if ! command -v espanso &> /dev/null; then
+    echo "Installing Espanso..."
+
+    sudo apt install -y libfuse2
+    
+    # 1. Create directory and download
+    mkdir -p "$HOME/opt"
+    wget -O "$HOME/opt/Espanso.AppImage" 'https://github.com/espanso/espanso/releases/latest/download/Espanso-X11.AppImage'
+    chmod u+x "$HOME/opt/Espanso.AppImage"
+    
+    # 2. Register path (Create alias)
+    # Using 'yes' to skip the confirmation prompt if it exists
+    yes | sudo "$HOME/opt/Espanso.AppImage" env-path register
+    
+    # 3. Register and Start Service
+    # Note: This requires a D-Bus session, which you have in your i3 environment
+    /usr/local/bin/espanso service register
+    /usr/local/bin/espanso start
+else
+    echo "Espanso already exists, skipping."
+fi

@@ -23,3 +23,17 @@ matches:
 
   - trigger: ";todo"
     replace: "// TODO: $|$"
+
+  - trigger: ";af"
+    replace: "const $|$ = () => {\n\n};"
+
+  - trigger: ";em"
+    replace: "swapnilupadhyaykharel@gmail.com"
+
+  - trigger: ":lenny"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: 'echo -e "(づᵔ◡ᵔ)づ\nツ\n¯\\_(ツ)_/¯\n(╯°□°）╯︵ ┻━┻" | rofi -dmenu -p "Lenny"'
