@@ -350,3 +350,6 @@ bindsym $mod+c exec --no-startup-id code
 # Open mpv in a floating window
  for_window [class="mpv"] floating enable
 bindsym $mod+y exec --no-startup-id mpv --player-operation-mode=pseudo-gui
+
+# snippet picker
+for_window [title="Snippet Picker"] floating enable, resize set 1000 600, move position center

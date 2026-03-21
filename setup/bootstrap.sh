@@ -105,4 +105,15 @@ else
     echo "--- $FONT_NAME Nerd Font already exists, skipping ---"
 fi
 
+EMOJI_CHECK="/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
+if [ ! -f "$EMOJI_CHECK" ]; then
+    echo "--- Installing Noto Color Emoji ---"
+    sudo apt install -y fonts-noto-color-emoji
+    # Refresh font cache
+    echo "Refreshing font cache..."
+    fc-cache -f
+else
+    echo "--- Noto Color Emoji already exists, skipping ---"
+fi
+
 echo "Setup complete! Restart your shell."

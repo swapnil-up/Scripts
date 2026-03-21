@@ -39,3 +39,19 @@ matches:
         type: shell
         params:
           cmd: 'cat ~/.config/espanso/lennys.txt | rofi -dmenu -p "Lenny" -i | awk -F "|" "{print \$3}" | sed "s/^[ \t]*//;s/[ \t]*$//"'
+
+  - trigger: ":emoji"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: 'cat ~/.config/espanso/emojis.txt | rofi -dmenu -p "Emoji" -i | awk -F "|" "{print \$3}" | sed "s/^[ \t]*//;s/[ \t]*$//"'
+            
+  - trigger: ";snip"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: "~/github/scripts/scripts/snippets/snip-picker.sh"
