@@ -55,3 +55,19 @@ matches:
         type: shell
         params:
           cmd: "~/github/scripts/scripts/snippets/snip-picker.sh"
+
+  - trigger: ";calc"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: "~/github/scripts/scripts/espanso/calculator.sh"
+
+  - trigger: ";case"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: "~/github/scripts/scripts/espanso/case-picker.sh"
