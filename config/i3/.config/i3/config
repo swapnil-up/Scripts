@@ -38,9 +38,6 @@ exec --no-startup-id nm-applet
 # Have a bluetooth daemon
 exec --no-startup-id blueman-applet
 
-# opacity decrease for non active windows
-exec --no-startup-id picom --config ~/.config/picom/picom.conf
-
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && notify-send "Volume Up" "$(pactl get-sink-volume @DEFAULT_SINK@ | grep -oP '\d+%' | head -1)" && $refresh_i3status
@@ -135,7 +132,7 @@ set $ws9 "9"
 set $ws10 "10"
 
 assign [class="Code"] $ws3
-assign [class="firefox-dev"] $ws4
+assign [class="(?i)firefox.*"] $ws4
 
 
 # switch to workspace
@@ -228,7 +225,7 @@ bindsym Mod1+Shift+b exec ~/connect_and_launch.sh
 #bindsym $mod+Shift+b exec --no-startup-id qutebrowser
 
 # start Firefox browser
-bindsym $mod+b exec --no-startup-id firefox-dev
+bindsym $mod+b exec --no-startup-id "command -v firefox-dev >/dev/null && firefox-dev || firefox"
 
 # Screen brightness controls
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5% && notify-send "Brightness Up" "$(brightnessctl | grep -oP '\(\K\d+%' | head -1)"
@@ -353,3 +350,10 @@ bindsym $mod+y exec --no-startup-id mpv --player-operation-mode=pseudo-gui
 
 # snippet picker
 for_window [title="Snippet Picker"] floating enable, resize set 1000 600, move position center
+
+# Set GTK dark mode on startup
+exec --no-startup-id gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+exec --no-startup-id gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+
+# picom for dimming non-active windows
+exec_always --no-startup-id picom --config ~/.config/picom/picom.conf

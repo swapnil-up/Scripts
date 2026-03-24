@@ -30,7 +30,7 @@ APPS=(
     "conky-all" "dbus" "dunst" "flameshot" "git-crypt"
     "i3-wm" "i3status" "mpv" "rofi" "stow" "tree" "i3lock"
     "blueman" "pulseaudio-utils" "libpulse0" "maim"
-    "npm" "trash-cli" "gedit" "zoxide"
+    "npm" "trash-cli" "gedit" "zoxide" "ncal" "pipx"
     "firefox" "brightnessctl" "feh" "neovim" "fastfetch" "code"
 )
 

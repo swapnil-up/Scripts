@@ -70,9 +70,14 @@ SAVEHIST=10000
 setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
 setopt SHARE_HISTORY             # Share history between all sessions.
 setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
-setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded to history.
+setopt HIST_IGNORE_ALL_DUPS          # Don't record an entry that was just recorded to history.
 setopt HIST_IGNORE_SPACE         # Don't record an entry starting with a space.
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
+
+setopt HIST_IGNORE_ALL_DUPS  # Keep history cleanh
+
+[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+[ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
@@ -159,3 +164,27 @@ export NVM_DIR="$HOME/.nvm"
 chpwd() {
     ls -F --color=auto
 }
+
+# Dark mode, may not work on all apps and cause UI glitches
+# export GTK_THEME=Adwaita-dark
+
+# Clear screen on empty Enter
+clear-empty-enter() {
+    if [[ -z $BUFFER ]]; then
+        # If the line is empty, clear the screen and accept the empty line
+        clear
+        zle accept-line
+    else
+        # If there is text, behave like a normal Enter key
+        zle accept-line
+    fi
+}
+
+# Register the function as a Zsh Line Editor (ZLE) widget
+zle -N clear-empty-enter
+
+# Bind the Enter key (standardly '^M') to our new widget
+bindkey '^M' clear-empty-enter
+
+# Setup zoxide for quicker searching
+eval "$(zoxide init zsh)"

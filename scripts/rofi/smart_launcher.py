@@ -76,7 +76,7 @@ def load_apps():
     return apps
 
 def build_candidates():
-    items = []
+    items = ["Terminal"]
 
     # commands
     items += [
