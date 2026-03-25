@@ -126,3 +126,16 @@ if ! command -v espanso &> /dev/null; then
 else
     echo "Espanso already exists, skipping."
 fi
+
+# --- Calibre ---
+if ! command -v calibre &> /dev/null; then
+    echo "Installing Calibre..."
+    # Install dependencies required by the Calibre installer
+    sudo apt install -y libxcb-cursor0 libnss3
+    
+    # Run the official installer
+    # Note: We use --unattended to avoid interactive prompts
+    sudo wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin install_dir=/opt isolated=false
+else
+    echo "Calibre already exists, skipping."
+fi
