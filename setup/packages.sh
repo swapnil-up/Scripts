@@ -139,3 +139,38 @@ if ! command -v calibre &> /dev/null; then
 else
     echo "Calibre already exists, skipping."
 fi
+
+
+# --- Anki (Official Launcher) ---
+if ! command -v anki &> /dev/null; then
+    echo "--- Installing Anki via Launcher ---"
+
+    # 1. Install Dependencies
+    sudo apt update
+    sudo apt install -y libxcb-xinerama0 libxcb-cursor0 libnss3 zstd curl
+
+    # 2. Setup Temporary Workspace
+    TEMP_ANKI=$(mktemp -d)
+    cd "$TEMP_ANKI"
+
+    # 3. Download the generic Linux launcher
+    # This URL is more stable than the specific versioned ones
+    LAUNCHER_URL="https://github.com/ankitects/anki/releases/download/25.09/anki-launcher-25.09-linux.tar.zst"
+    echo "Downloading Anki Launcher..."
+    curl -L "$LAUNCHER_URL" -o anki-launcher.tar.zst
+
+    # 4. Extract and Install
+    tar --use-compress-program=unzstd -xf anki-launcher.tar.zst
+    
+    # Enter the extracted folder (usually named anki-launcher or similar)
+    cd anki-launcher*/
+    sudo ./install.sh
+
+    # 5. Cleanup
+    cd "$HOME"
+    rm -rf "$TEMP_ANKI"
+    
+    echo "Anki Launcher installed. Running 'anki' for the first time will fetch the core files."
+else
+    echo "Anki already exists, skipping."
+fi
