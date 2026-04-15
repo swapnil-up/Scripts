@@ -3,6 +3,7 @@ import sys
 import subprocess
 import signal
 
+
 def record_screen(output_file, region=None, fps=30, show_mouse=True):
     """
     Record the X11 screen to a video file.
@@ -11,18 +12,18 @@ def record_screen(output_file, region=None, fps=30, show_mouse=True):
     Press Ctrl+C to stop recording.
     """
 
-    cmd = ['ffmpeg', '-y']
+    cmd = ["ffmpeg", "-y"]
 
     if region:
         x, y, width, height = region
-        cmd.extend(['-video_size', f'{width}x{height}'])
-        cmd.extend(['-f', 'x11grab', '-i', f':0.0+{x},{y}'])
+        cmd.extend(["-video_size", f"{width}x{height}"])
+        cmd.extend(["-f", "x11grab", "-i", f":0.0+{x},{y}"])
     else:
-        cmd.extend(['-f', 'x11grab', '-i', ':0.0'])
+        cmd.extend(["-f", "x11grab", "-i", ":0.0"])
 
-    cmd.extend(['-draw_mouse', '1' if show_mouse else '0'])
-    cmd.extend(['-framerate', str(fps)])
-    cmd.extend(['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23'])
+    cmd.extend(["-draw_mouse", "1" if show_mouse else "0"])
+    cmd.extend(["-framerate", str(fps)])
+    cmd.extend(["-c:v", "libx264", "-preset", "ultrafast", "-crf", "23"])
     cmd.append(output_file)
 
     print("Recording screen...")
@@ -62,14 +63,20 @@ if __name__ == "__main__":
 
     i = 2
     while i < len(sys.argv):
-        if sys.argv[i] == '--region' and i + 4 < len(sys.argv):
-            region = (int(sys.argv[i+1]), int(sys.argv[i+2]),
-                      int(sys.argv[i+3]), int(sys.argv[i+4]))
+        if sys.argv[i] == "--region" and i + 4 < len(sys.argv):
+            region = (
+                int(sys.argv[i + 1]),
+                int(sys.argv[i + 2]),
+                int(sys.argv[i + 3]),
+                int(sys.argv[i + 4]),
+            )
             i += 5
-        elif sys.argv[i] == '--fps' and i + 1 < len(sys.argv):
-            fps = int(sys.argv[i + 1]); i += 2
-        elif sys.argv[i] == '--no-mouse':
-            show_mouse = False; i += 1
+        elif sys.argv[i] == "--fps" and i + 1 < len(sys.argv):
+            fps = int(sys.argv[i + 1])
+            i += 2
+        elif sys.argv[i] == "--no-mouse":
+            show_mouse = False
+            i += 1
         else:
             i += 1
 

@@ -22,8 +22,8 @@ def mark_cuts(input_file):
     Sidecar saved to: ~/vedit/<stem>.markers.json
     """
 
-    markers_file = sidecar_path(input_file, 'markers.json')
-    timestamp_file = sidecar_path(input_file, 'timestamps.tmp')
+    markers_file = sidecar_path(input_file, "markers.json")
+    timestamp_file = sidecar_path(input_file, "timestamps.tmp")
 
     markers = []
     if os.path.exists(markers_file):
@@ -31,11 +31,11 @@ def mark_cuts(input_file):
             "Found existing markers for this file. "
             "(l)oad them, (d)elete and start fresh, or (c)ancel? "
         )
-        if response.lower() == 'l':
-            with open(markers_file, 'r') as f:
+        if response.lower() == "l":
+            with open(markers_file, "r") as f:
                 markers = json.load(f)
             print(f"Loaded {len(markers)} existing markers")
-        elif response.lower() == 'd':
+        elif response.lower() == "d":
             os.remove(markers_file)
             print("Deleted old markers, starting fresh")
         else:
@@ -82,28 +82,22 @@ def mark_cuts(input_file):
     """
 
     lua_file = f"/tmp/mpv_marker_{os.getpid()}.lua"
-    with open(lua_file, 'w') as f:
+    with open(lua_file, "w") as f:
         f.write(lua_script)
 
-    cmd = [
-        'mpv',
-        '--speed=2',
-        '--osd-level=3',
-        f'--script={lua_file}',
-        input_file
-    ]
+    cmd = ["mpv", "--speed=2", "--osd-level=3", f"--script={lua_file}", input_file]
 
     try:
         subprocess.run(cmd)
 
         if os.path.exists(timestamp_file):
-            with open(timestamp_file, 'r') as f:
+            with open(timestamp_file, "r") as f:
                 new_markers = [float(line.strip()) for line in f if line.strip()]
 
             markers.extend(new_markers)
             markers.sort()
 
-            with open(markers_file, 'w') as f:
+            with open(markers_file, "w") as f:
                 json.dump(markers, f, indent=2)
 
             os.remove(timestamp_file)
@@ -119,7 +113,9 @@ def mark_cuts(input_file):
                     start_m = markers[i]
                     end_m = markers[i + 1]
                     duration = end_m - start_m
-                    print(f"  Cut {i // 2 + 1}: {format_time(start_m)} -> {format_time(end_m)} ({duration:.1f}s)")
+                    print(
+                        f"  Cut {i // 2 + 1}: {format_time(start_m)} -> {format_time(end_m)} ({duration:.1f}s)"
+                    )
             else:
                 print("\nWARNING: Odd number of markers — they must come in pairs.")
                 print("Run cut_marker.py again to add the missing marker.")

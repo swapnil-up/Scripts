@@ -20,6 +20,6 @@ alacritty --title "Snippet Picker" -e bash -c "
 
 # Wait a split second for the file to be written, then return its content
 if [ -f "$TMP_FILE" ]; then
-    cat "$(cat $TMP_FILE)"
-    rm "$TMP_FILE"
+	cat "$(cat $TMP_FILE)"
+	rm "$TMP_FILE"
 fi

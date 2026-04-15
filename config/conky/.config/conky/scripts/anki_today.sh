@@ -8,7 +8,7 @@ if [ ! -f "$DB" ]; then
 fi
 
 SECONDS_IN_DAY=86400
-TIME_THRESHOLD=$(($(date +%s) - $SECONDS_IN_DAY - 600))
+TIME_THRESHOLD=$(($(date +%s) - SECONDS_IN_DAY - 600))
 
 # Execute the SQL query
 sqlite3 "$DB" "

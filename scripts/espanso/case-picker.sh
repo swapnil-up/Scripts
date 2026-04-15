@@ -2,7 +2,7 @@
 
 INPUT=$(xclip -o -selection clipboard 2>/dev/null)
 if [ -z "$INPUT" ]; then
-    exit 0
+	exit 0
 fi
 
 CASE_SCRIPT="$HOME/github/scripts/scripts/espanso/case.py"
@@ -23,6 +23,6 @@ alacritty --title "Case Picker" -e bash -c "
 "
 
 if [ -f "$TMP_FILE" ]; then
-    cat "$TMP_FILE"
-    rm "$TMP_FILE"
+	cat "$TMP_FILE"
+	rm "$TMP_FILE"
 fi

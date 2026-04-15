@@ -22,6 +22,6 @@ alacritty --title "Calculator" -e bash -c "
 "
 
 if [ -f "$TMP_FILE" ]; then
-    cat "$TMP_FILE"
-    rm "$TMP_FILE"
+	cat "$TMP_FILE"
+	rm "$TMP_FILE"
 fi

@@ -24,4 +24,11 @@ cd setup && ./bootstrap.sh
 cd config && stow -t ~ */
 ```
 
+## Formatting
+
+```bash
+make format   # shfmt + black
+make lint     # syntax check
+```
+
 See individual directories for details.

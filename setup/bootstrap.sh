@@ -4,7 +4,11 @@ export DEBIAN_FRONTEND=noninteractive
 
 # Ask for sudo upfront and keep it alive
 sudo -v
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do
+	sudo -n true
+	sleep 60
+	kill -0 "$$" || exit
+done 2>/dev/null &
 
 echo "Installing base requirements..."
 
@@ -17,12 +21,12 @@ PACKAGES=(git stow curl build-essential)
 
 # 3. Install only what is missing
 for pkg in "${PACKAGES[@]}"; do
-    if dpkg -s "$pkg" >/dev/null 2>&1; then
-        echo "  [OK] $pkg is already installed."
-    else
-        echo "  [..] Installing $pkg..."
-        sudo apt install -y "$pkg"
-    fi
+	if dpkg -s "$pkg" >/dev/null 2>&1; then
+		echo "  [OK] $pkg is already installed."
+	else
+		echo "  [..] Installing $pkg..."
+		sudo apt install -y "$pkg"
+	fi
 done
 
 # 4. Run Modular Installers
@@ -45,7 +49,6 @@ chmod +x "$SCRIPT_DIR/packages.sh"
 "$SCRIPT_DIR/languages.sh"
 "$SCRIPT_DIR/packages.sh"
 
-
 # --- 5. The Stow Phase ---
 echo "Linking configurations with Stow..."
 
@@ -56,64 +59,63 @@ CONFIG_DIR="$(cd "$SCRIPT_DIR/../config" && pwd)"
 cd "$CONFIG_DIR"
 
 for folder in */; do
-    folder=${folder%/}
-    if [ -d "$folder/.config" ]; then
-        TARGET="$HOME/.config/$folder"
-    else
-        # For things like bash, it's usually ~/.bashrc, but stow handles the dot
-        TARGET="$HOME/.$folder"
-    fi
+	folder=${folder%/}
+	if [ -d "$folder/.config" ]; then
+		TARGET="$HOME/.config/$folder"
+	else
+		# For things like bash, it's usually ~/.bashrc, but stow handles the dot
+		TARGET="$HOME/.$folder"
+	fi
 
-    if [ -e "$TARGET" ] || [ -L "$TARGET" ]; then
-        CURRENT_LINK=$(readlink -f "$TARGET" 2>/dev/null || echo "")
-        if [[ "$CURRENT_LINK" != *"/github/scripts/"* ]]; then
-            echo "  [CLEANUP] Removing conflicting target: $TARGET"
-            rm -rf "$TARGET"
-        fi
-    fi
+	if [ -e "$TARGET" ] || [ -L "$TARGET" ]; then
+		CURRENT_LINK=$(readlink -f "$TARGET" 2>/dev/null || echo "")
+		if [[ $CURRENT_LINK != *"/github/scripts/"* ]]; then
+			echo "  [CLEANUP] Removing conflicting target: $TARGET"
+			rm -rf "$TARGET"
+		fi
+	fi
 
-    # 3. Now Stow should have a perfectly empty path to link into
-    echo "  [LINK] Stowing $folder..."
-    stow -R -t "$HOME" "$folder"
+	# 3. Now Stow should have a perfectly empty path to link into
+	echo "  [LINK] Stowing $folder..."
+	stow -R -t "$HOME" "$folder"
 done
 
-
-FONT_NAME="JetBrainsMono" 
+FONT_NAME="JetBrainsMono"
 FONT_DIR="$HOME/.local/share/fonts"
 CHECK_FILE="$FONT_DIR/JetBrainsMonoNerdFont-Regular.ttf"
 VERSION="v3.4.0"
 
 if [ ! -f "$CHECK_FILE" ]; then
-    echo "--- Installing $FONT_NAME Nerd Font ---"
-    
-    mkdir -p "$FONT_DIR"
-    TEMP_DIR=$(mktemp -d)
-    
-    # Download only the specific font zip
-    curl -L "https://github.com/ryanoasis/nerd-fonts/releases/download/${VERSION}/${FONT_NAME}.zip" -o "$TEMP_DIR/$FONT_NAME.zip"
-    
-    # Unzip into the local fonts directory
-    unzip -o "$TEMP_DIR/$FONT_NAME.zip" -d "$FONT_DIR"
-    
-    # Cleanup
-    rm -rf "$TEMP_DIR"
-    
-    # Refresh font cache
-    echo "Refreshing font cache..."
-    fc-cache -f
+	echo "--- Installing $FONT_NAME Nerd Font ---"
+
+	mkdir -p "$FONT_DIR"
+	TEMP_DIR=$(mktemp -d)
+
+	# Download only the specific font zip
+	curl -L "https://github.com/ryanoasis/nerd-fonts/releases/download/${VERSION}/${FONT_NAME}.zip" -o "$TEMP_DIR/$FONT_NAME.zip"
+
+	# Unzip into the local fonts directory
+	unzip -o "$TEMP_DIR/$FONT_NAME.zip" -d "$FONT_DIR"
+
+	# Cleanup
+	rm -rf "$TEMP_DIR"
+
+	# Refresh font cache
+	echo "Refreshing font cache..."
+	fc-cache -f
 else
-    echo "--- $FONT_NAME Nerd Font already exists, skipping ---"
+	echo "--- $FONT_NAME Nerd Font already exists, skipping ---"
 fi
 
 EMOJI_CHECK="/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
 if [ ! -f "$EMOJI_CHECK" ]; then
-    echo "--- Installing Noto Color Emoji ---"
-    sudo apt install -y fonts-noto-color-emoji
-    # Refresh font cache
-    echo "Refreshing font cache..."
-    fc-cache -f
+	echo "--- Installing Noto Color Emoji ---"
+	sudo apt install -y fonts-noto-color-emoji
+	# Refresh font cache
+	echo "Refreshing font cache..."
+	fc-cache -f
 else
-    echo "--- Noto Color Emoji already exists, skipping ---"
+	echo "--- Noto Color Emoji already exists, skipping ---"
 fi
 
 echo "Setup complete! Restart your shell."

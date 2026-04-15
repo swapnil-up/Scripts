@@ -5,8 +5,4 @@ seconds = int(sys.argv[1]) if len(sys.argv) > 1 else 300
 
 time.sleep(seconds)
 
-subprocess.run([
-    "notify-send",
-    "⏰ Timer done",
-    f"{seconds // 60} minutes passed"
-])
+subprocess.run(["notify-send", "⏰ Timer done", f"{seconds // 60} minutes passed"])

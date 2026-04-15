@@ -7,6 +7,6 @@ if __name__ == "__main__":
         print("Usage: info.py VIDEO_FILE")
         print("Example: info.py workout.mp4")
         sys.exit(1)
-    
+
     validate_file(sys.argv[1])
     print_video_info(sys.argv[1])

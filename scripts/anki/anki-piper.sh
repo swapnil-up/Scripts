@@ -12,20 +12,20 @@ highlighted_text=$(xclip -o -sel primary 2>/dev/null || xclip -o -sel clipboard 
 sleep 0.2
 active_window_id=$(xprop -root _NET_ACTIVE_WINDOW | awk '{print $5}')
 
-if [[ "$active_window_id" != "0x0" && -n "$active_window_id" ]]; then
-    # Try UTF8 name, then String name, then Class
-    source_name=$(xprop -id "$active_window_id" _NET_WM_NAME 2>/dev/null | cut -d'=' -f2 | tr -d '"' | sed 's/^ //')
-    [[ -z "$source_name" ]] && source_name=$(xprop -id "$active_window_id" WM_NAME 2>/dev/null | cut -d'=' -f2 | tr -d '"' | sed 's/^ //')
-    [[ -z "$source_name" ]] && source_name=$(xprop -id "$active_window_id" WM_CLASS 2>/dev/null | awk -F '"' '{print $4}')
+if [[ $active_window_id != "0x0" && -n $active_window_id ]]; then
+	# Try UTF8 name, then String name, then Class
+	source_name=$(xprop -id "$active_window_id" _NET_WM_NAME 2>/dev/null | cut -d'=' -f2 | tr -d '"' | sed 's/^ //')
+	[[ -z $source_name ]] && source_name=$(xprop -id "$active_window_id" WM_NAME 2>/dev/null | cut -d'=' -f2 | tr -d '"' | sed 's/^ //')
+	[[ -z $source_name ]] && source_name=$(xprop -id "$active_window_id" WM_CLASS 2>/dev/null | awk -F '"' '{print $4}')
 fi
 source_name="${source_name:-Unknown Application}"
 
 # 3. Check Anki & Launch silently if needed
-if ! curl -s --max-time 0.1 http://localhost:8765 > /dev/null; then
-    # setsid detaches it from the current process group to prevent hang
-    setsid anki >/dev/null 2>&1 & 
-    # Use a shorter sleep or a loop for first-time launch
-    sleep 5 
+if ! curl -s --max-time 0.1 http://localhost:8765 >/dev/null; then
+	# setsid detaches it from the current process group to prevent hang
+	setsid anki >/dev/null 2>&1 &
+	# Use a shorter sleep or a loop for first-time launch
+	sleep 5
 fi
 
 # 4. Construct Payload
@@ -33,10 +33,10 @@ current_datetime=$(date '+%Y-%m-%d %H:%M')
 context_payload="<div style='color:gray; font-size:0.8em;'>Source: $source_name ($current_datetime)</div><br><b>$highlighted_text</b>"
 
 payload=$(jq -n \
-  --arg deck "$DECK_NAME" \
-  --arg note "$NOTE_TYPE" \
-  --arg context "$context_payload" \
-  '{
+	--arg deck "$DECK_NAME" \
+	--arg note "$NOTE_TYPE" \
+	--arg context "$context_payload" \
+	'{
     "action": "guiAddCards",
     "version": 6,
     "params": {
@@ -53,6 +53,6 @@ payload=$(jq -n \
 response=$(curl -s -X POST -d "$payload" http://localhost:8765)
 
 # If in i3, move to the Anki window automatically to avoid the "red" urgency hint
-i3-msg "[class=\"Anki\" title=\"Add\"] focus" > /dev/null 2>&1
+i3-msg '[class="Anki" title="Add"] focus' >/dev/null 2>&1
 
-echo "$current_datetime: Dispatched highlight" >> "$LOG_FILE"
+echo "$current_datetime: Dispatched highlight" >>"$LOG_FILE"

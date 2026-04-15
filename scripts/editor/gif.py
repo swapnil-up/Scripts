@@ -4,8 +4,16 @@ import os
 import tempfile
 from utils import run_ffmpeg, validate_file, get_video_info, parse_time
 
-def create_gif(input_file, output_file, start=None, duration=None,
-               fps=15, width=None, quality='medium'):
+
+def create_gif(
+    input_file,
+    output_file,
+    start=None,
+    duration=None,
+    fps=15,
+    width=None,
+    quality="medium",
+):
     """
     Convert a video (or segment) to an optimized GIF using palette generation.
 
@@ -22,58 +30,67 @@ def create_gif(input_file, output_file, start=None, duration=None,
     info = get_video_info(input_file)
 
     quality_settings = {
-        'low':    {'fps': 10, 'scale': 480,  'colors': 128},
-        'medium': {'fps': 15, 'scale': 640,  'colors': 256},
-        'high':   {'fps': 20, 'scale': 800,  'colors': 256},
-        'max':    {'fps': 30, 'scale': -1,   'colors': 256},
+        "low": {"fps": 10, "scale": 480, "colors": 128},
+        "medium": {"fps": 15, "scale": 640, "colors": 256},
+        "high": {"fps": 20, "scale": 800, "colors": 256},
+        "max": {"fps": 30, "scale": -1, "colors": 256},
     }
 
-    settings = quality_settings.get(quality, quality_settings['medium'])
+    settings = quality_settings.get(quality, quality_settings["medium"])
 
     if fps:
-        settings['fps'] = fps
+        settings["fps"] = fps
     if width:
-        settings['scale'] = width
+        settings["scale"] = width
 
     filters = []
-    if settings['scale'] != -1 and info.get('width', 0) > settings['scale']:
+    if settings["scale"] != -1 and info.get("width", 0) > settings["scale"]:
         filters.append(f"scale={settings['scale']}:-1:flags=lanczos")
     filters.append(f"fps={settings['fps']}")
-    filter_str = ','.join(filters) if filters else None
+    filter_str = ",".join(filters) if filters else None
 
-    palette_file = tempfile.mktemp(suffix='.png')
+    palette_file = tempfile.mktemp(suffix=".png")
 
     try:
         print(f"Creating GIF — quality: {quality}")
         print(f"  FPS    : {settings['fps']}")
-        print(f"  Width  : {settings['scale'] if settings['scale'] != -1 else info.get('width', '?')}")
+        print(
+            f"  Width  : {settings['scale'] if settings['scale'] != -1 else info.get('width', '?')}"
+        )
         print(f"  Colors : {settings['colors']}")
 
         # Step 1: generate palette
-        palette_cmd = ['ffmpeg', '-y']
+        palette_cmd = ["ffmpeg", "-y"]
         if start:
-            palette_cmd.extend(['-ss', str(parse_time(start))])
+            palette_cmd.extend(["-ss", str(parse_time(start))])
         if duration:
-            palette_cmd.extend(['-t', str(parse_time(duration))])
-        palette_cmd.extend(['-i', input_file])
+            palette_cmd.extend(["-t", str(parse_time(duration))])
+        palette_cmd.extend(["-i", input_file])
         vf = f"{filter_str}," if filter_str else ""
-        palette_cmd.extend(['-vf', f"{vf}palettegen=max_colors={settings['colors']}:stats_mode=diff"])
+        palette_cmd.extend(
+            ["-vf", f"{vf}palettegen=max_colors={settings['colors']}:stats_mode=diff"]
+        )
         palette_cmd.append(palette_file)
 
         print("Generating color palette...")
         run_ffmpeg(palette_cmd, show_progress=False)
 
         # Step 2: create GIF using palette
-        gif_cmd = ['ffmpeg', '-y']
+        gif_cmd = ["ffmpeg", "-y"]
         if start:
-            gif_cmd.extend(['-ss', str(parse_time(start))])
+            gif_cmd.extend(["-ss", str(parse_time(start))])
         if duration:
-            gif_cmd.extend(['-t', str(parse_time(duration))])
-        gif_cmd.extend(['-i', input_file, '-i', palette_file])
+            gif_cmd.extend(["-t", str(parse_time(duration))])
+        gif_cmd.extend(["-i", input_file, "-i", palette_file])
         if filter_str:
-            gif_cmd.extend(['-lavfi', f"{filter_str} [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=5"])
+            gif_cmd.extend(
+                [
+                    "-lavfi",
+                    f"{filter_str} [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=5",
+                ]
+            )
         else:
-            gif_cmd.extend(['-lavfi', "paletteuse=dither=bayer:bayer_scale=5"])
+            gif_cmd.extend(["-lavfi", "paletteuse=dither=bayer:bayer_scale=5"])
         gif_cmd.append(output_file)
 
         print("Creating GIF...")
@@ -114,20 +131,25 @@ if __name__ == "__main__":
     duration = None
     fps = 15
     width = None
-    quality = 'medium'
+    quality = "medium"
 
     i = 3
     while i < len(sys.argv):
-        if sys.argv[i] == '--start' and i + 1 < len(sys.argv):
-            start = sys.argv[i + 1]; i += 2
-        elif sys.argv[i] == '--duration' and i + 1 < len(sys.argv):
-            duration = sys.argv[i + 1]; i += 2
-        elif sys.argv[i] == '--fps' and i + 1 < len(sys.argv):
-            fps = int(sys.argv[i + 1]); i += 2
-        elif sys.argv[i] == '--width' and i + 1 < len(sys.argv):
-            width = int(sys.argv[i + 1]); i += 2
-        elif sys.argv[i] == '--quality' and i + 1 < len(sys.argv):
-            quality = sys.argv[i + 1]; i += 2
+        if sys.argv[i] == "--start" and i + 1 < len(sys.argv):
+            start = sys.argv[i + 1]
+            i += 2
+        elif sys.argv[i] == "--duration" and i + 1 < len(sys.argv):
+            duration = sys.argv[i + 1]
+            i += 2
+        elif sys.argv[i] == "--fps" and i + 1 < len(sys.argv):
+            fps = int(sys.argv[i + 1])
+            i += 2
+        elif sys.argv[i] == "--width" and i + 1 < len(sys.argv):
+            width = int(sys.argv[i + 1])
+            i += 2
+        elif sys.argv[i] == "--quality" and i + 1 < len(sys.argv):
+            quality = sys.argv[i + 1]
+            i += 2
         else:
             i += 1
 

@@ -44,7 +44,7 @@ function toggle_nvidia {
 	# -1024 => full grayscale
 	desaturate_value=-1024
 
-	if ((value == $desaturate_value)); then
+	if ((value == desaturate_value)); then
 		value=0
 		toggle_mode="color"
 	else
@@ -80,7 +80,7 @@ function toggle_compositor {
 		pkill -x $compositor
 		sleep 1
 
-		if (($use_experimental_backends == 1)); then
+		if ((use_experimental_backends == 1)); then
 
 			tmpfile=$(mktemp)
 			trap 'rm -f "${tmpfile}"' EXIT

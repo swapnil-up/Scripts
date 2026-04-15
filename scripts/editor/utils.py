@@ -32,7 +32,7 @@ def auto_output_path(input_file, suffix, ext=None):
     directory = os.path.dirname(os.path.abspath(input_file))
     stem = os.path.splitext(os.path.basename(input_file))[0]
     if ext is None:
-        ext = os.path.splitext(input_file)[1].lstrip('.')
+        ext = os.path.splitext(input_file)[1].lstrip(".")
     return os.path.join(directory, f"{stem}_{suffix}.{ext}")
 
 
@@ -51,53 +51,79 @@ def run_ffmpeg(cmd, show_progress=True):
             sys.exit(1)
     return result
 
+
 def get_duration(video_file):
     """Get video duration in seconds"""
-    cmd = ['ffprobe', '-v', 'error', '-show_entries', 
-           'format=duration', '-of', 
-           'default=noprint_wrappers=1:nokey=1', video_file]
+    cmd = [
+        "ffprobe",
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        video_file,
+    ]
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         print(f"Error getting duration: {result.stderr}", file=sys.stderr)
         sys.exit(1)
     return float(result.stdout.strip())
 
+
 def get_video_info(video_file):
     """Get comprehensive video information"""
-    cmd = ['ffprobe', '-v', 'quiet', '-print_format', 'json',
-           '-show_format', '-show_streams', video_file]
+    cmd = [
+        "ffprobe",
+        "-v",
+        "quiet",
+        "-print_format",
+        "json",
+        "-show_format",
+        "-show_streams",
+        video_file,
+    ]
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         print(f"Error getting video info: {result.stderr}", file=sys.stderr)
         sys.exit(1)
-    
+
     data = json.loads(result.stdout)
-    
+
     # Extract useful info
-    video_stream = next((s for s in data['streams'] if s['codec_type'] == 'video'), None)
-    audio_stream = next((s for s in data['streams'] if s['codec_type'] == 'audio'), None)
-    
+    video_stream = next(
+        (s for s in data["streams"] if s["codec_type"] == "video"), None
+    )
+    audio_stream = next(
+        (s for s in data["streams"] if s["codec_type"] == "audio"), None
+    )
+
     info = {
-        'duration': float(data['format'].get('duration', 0)),
-        'size_mb': float(data['format'].get('size', 0)) / (1024 * 1024),
-        'bitrate': int(data['format'].get('bit_rate', 0)),
+        "duration": float(data["format"].get("duration", 0)),
+        "size_mb": float(data["format"].get("size", 0)) / (1024 * 1024),
+        "bitrate": int(data["format"].get("bit_rate", 0)),
     }
-    
+
     if video_stream:
-        info.update({
-            'width': video_stream.get('width'),
-            'height': video_stream.get('height'),
-            'fps': eval(video_stream.get('r_frame_rate', '0/1')),  # e.g. "30/1" -> 30
-            'codec': video_stream.get('codec_name'),
-        })
-    
+        info.update(
+            {
+                "width": video_stream.get("width"),
+                "height": video_stream.get("height"),
+                "fps": eval(
+                    video_stream.get("r_frame_rate", "0/1")
+                ),  # e.g. "30/1" -> 30
+                "codec": video_stream.get("codec_name"),
+            }
+        )
+
     if audio_stream:
-        info['has_audio'] = True
-        info['audio_codec'] = audio_stream.get('codec_name')
+        info["has_audio"] = True
+        info["audio_codec"] = audio_stream.get("codec_name")
     else:
-        info['has_audio'] = False
-    
+        info["has_audio"] = False
+
     return info
+
 
 def validate_file(filepath):
     """Check if file exists"""
@@ -105,11 +131,13 @@ def validate_file(filepath):
         print(f"Error: {filepath} not found")
         sys.exit(1)
 
+
 def format_time(seconds):
     """Convert seconds to HH:MM:SS.ms format"""
     mins, secs = divmod(seconds, 60)
     hours, mins = divmod(mins, 60)
     return f"{int(hours):02d}:{int(mins):02d}:{secs:06.3f}"
+
 
 def parse_time(time_str):
     """
@@ -117,15 +145,15 @@ def parse_time(time_str):
     Accepts: "10", "1:30", "01:30:45", "00:01:30.5"
     """
     time_str = time_str.strip()
-    
+
     # Already in seconds
     try:
         return float(time_str)
     except ValueError:
         pass
-    
+
     # Parse HH:MM:SS or MM:SS format
-    parts = time_str.split(':')
+    parts = time_str.split(":")
     if len(parts) == 3:  # HH:MM:SS
         h, m, s = parts
         return int(h) * 3600 + int(m) * 60 + float(s)
@@ -137,10 +165,11 @@ def parse_time(time_str):
         print("Use: seconds (10), MM:SS (1:30), or HH:MM:SS (01:30:45)")
         sys.exit(1)
 
+
 def print_video_info(video_file):
     """Print formatted video information"""
     info = get_video_info(video_file)
-    
+
     print(f"\nVideo: {video_file}")
     print(f"  Duration: {format_time(info['duration'])} ({info['duration']:.1f}s)")
     print(f"  Resolution: {info.get('width', '?')}x{info.get('height', '?')}")
@@ -149,6 +178,6 @@ def print_video_info(video_file):
     print(f"  Size: {info['size_mb']:.1f} MB")
     print(f"  Bitrate: {info['bitrate'] / 1000:.0f} kbps")
     print(f"  Audio: {'Yes' if info['has_audio'] else 'No'}")
-    if info['has_audio']:
+    if info["has_audio"]:
         print(f"  Audio Codec: {info.get('audio_codec', '?')}")
     print()
