@@ -188,3 +188,6 @@ bindkey '^M' clear-empty-enter
 
 # Setup zoxide for quicker searching
 eval "$(zoxide init zsh)"
+
+# opencode
+export PATH=/home/swap/.opencode/bin:$PATH
