@@ -28,6 +28,7 @@ DESKTOP_DIRS = [
 
 CACHE_TTL = 3600  # seconds
 
+
 def index_apps():
     apps = []
 
@@ -56,12 +57,15 @@ def index_apps():
             if not name or not exec_cmd:
                 continue
 
-            apps.append({
-                "name": name,
-                "desktop_id": path.stem,
-            })
+            apps.append(
+                {
+                    "name": name,
+                    "desktop_id": path.stem,
+                }
+            )
 
     return apps
+
 
 def load_apps():
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
@@ -75,13 +79,13 @@ def load_apps():
     APPS_CACHE.write_text(json.dumps(apps))
     return apps
 
+
 def build_candidates():
     items = ["Terminal"]
 
     # commands
     items += [
-        "./           <cmd> "
-        ",tt          toggle todo",
+        "./           <cmd> ,tt          toggle todo",
         ",t",
         ",tr          remove todo",
         # ",p",
@@ -90,7 +94,9 @@ def build_candidates():
         ",why",
         ",hmm",
         ",mf",
-        ",w <q>    search the web gh, yt, lb, wiki"
+        ",w <q>    search the web gh, yt, lb, wiki",
+        ",piper      text to speech (clipboard)",
+        ",whisper    speech to text (record)",
     ]
 
     items.append("---")
@@ -100,6 +106,7 @@ def build_candidates():
         items.append(app["name"])
 
     return items
+
 
 def score(query, candidate):
     query = query.lower()
@@ -116,14 +123,17 @@ def score(query, candidate):
     else:
         return 0
 
+
 def filter_and_rank(query, items):
     scored = [(score(query, i), i) for i in items]
     return [i for s, i in sorted(scored, reverse=True) if s > 0]
+
 
 def output_menu():
     items = build_candidates()
     for item in items:
         print(item)
+
 
 def dispatch(raw):
     if not raw:
@@ -131,9 +141,9 @@ def dispatch(raw):
 
     raw = raw.strip()
 
-    # 1. SHELL MODE 
+    # 1. SHELL MODE
     if raw.startswith("./"):
-        cmd = raw[2:].strip() # Strip the './'
+        cmd = raw[2:].strip()  # Strip the './'
         handle_bash(cmd)
         return
 
@@ -170,14 +180,19 @@ def dispatch(raw):
                 subprocess.run(["notify-send", "Cannot launch app", raw])
         return
 
+
 def handle_command(base, sub, rest):
     home = Path.home()
 
     if base in ["t", "tt", "tr", "ta"]:
         if rest:
-            subprocess.run([home / "github/scripts/scripts/rofi/rofi-todo-add.sh", base, rest])
+            subprocess.run(
+                [home / "github/scripts/scripts/rofi/rofi-todo-add.sh", base, rest]
+            )
         else:
-            subprocess.run([home / "github/scripts/scripts/rofi/rofi-todo-add.sh", base])
+            subprocess.run(
+                [home / "github/scripts/scripts/rofi/rofi-todo-add.sh", base]
+            )
 
     # elif base == "p":
     #     if not rest:
@@ -192,13 +207,16 @@ def handle_command(base, sub, rest):
 
     elif base in ["n", "til", "why", "hmm"]:
         if rest:
-            subprocess.run([home / "github/scripts/scripts/rofi/rofi-obsidian.sh", base, rest])
+            subprocess.run(
+                [home / "github/scripts/scripts/rofi/rofi-obsidian.sh", base, rest]
+            )
         else:
-            subprocess.run([home / "github/scripts/scripts/rofi/rofi-obsidian.sh", base])
+            subprocess.run(
+                [home / "github/scripts/scripts/rofi/rofi-obsidian.sh", base]
+            )
 
     elif base == "mf":
         log_annoying()
-
 
     elif base == "w":
         q = rest.replace(" ", "+")
@@ -215,6 +233,18 @@ def handle_command(base, sub, rest):
 
         subprocess.run(["firefox-dev", url])
 
+    elif base == "piper":
+        term = os.environ.get("TERMINAL", "x-terminal-emulator")
+        subprocess.run(
+            [term, "-e", "bash", "-c", "~/github/scripts/scripts/utils/piper.sh"]
+        )
+
+    elif base == "whisper":
+        term = os.environ.get("TERMINAL", "x-terminal-emulator")
+        subprocess.run(
+            [term, "-e", "bash", "-c", "~/github/scripts/scripts/utils/whisper.sh"]
+        )
+
     else:
         subprocess.run(["notify-send", "Unknown command", f",{base}"])
 
@@ -226,7 +256,7 @@ def log_annoying():
     entry = subprocess.run(
         ["rofi", "-dmenu", "-p", "annoying…", "-lines", "0"],
         capture_output=True,
-        text=True
+        text=True,
     ).stdout.strip()
 
     if not entry:
@@ -242,23 +272,18 @@ def handle_bash(cmd):
     """Executes a string as a bash command and notifies the user of the result."""
     try:
         process = subprocess.run(
-            cmd, 
-            shell=True, 
-            executable="/bin/bash", 
-            capture_output=True, 
-            text=True
+            cmd, shell=True, executable="/bin/bash", capture_output=True, text=True
         )
-        
+
         if process.returncode == 0:
             output = process.stdout.strip() or "Command executed successfully."
-            subprocess.run(["notify-send", "Bash Success", output[:100]]) 
+            subprocess.run(["notify-send", "Bash Success", output[:100]])
         else:
             error = process.stderr.strip() or "Unknown error"
             subprocess.run(["notify-send", "-u", "critical", "Bash Error", error[:100]])
-            
+
     except Exception as e:
         subprocess.run(["notify-send", "Execution Failed", str(e)])
-
 
 
 def main():
@@ -266,6 +291,7 @@ def main():
         dispatch(sys.stdin.read().strip())
     else:
         output_menu()
+
 
 if __name__ == "__main__":
     main()
