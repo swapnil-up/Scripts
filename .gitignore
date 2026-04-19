@@ -1,3 +1,4 @@
 setup/packages.microsoft.gpg
 __pycache__
 wget-log
+scraped_content.txt
