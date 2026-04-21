@@ -85,7 +85,8 @@ def build_candidates():
 
     # commands
     items += [
-        "./           <cmd> ,tt          toggle todo",
+        "./           <cmd>",
+        ",tt          toggle todo",
         ",t",
         ",tr          remove todo",
         # ",p",

@@ -136,7 +136,6 @@
   "github.copilot.nextEditSuggestions.enabled": false,
   "terminal.integrated.stickyScroll.enabled": false,
   "git.openRepositoryInParentFolders": "never",
-  "terminal.external.linuxExec": "alacritty",
   "workbench.secondarySideBar.defaultVisibility": "hidden",
   "files.autoSave": "afterDelay",
   "python.analysis.typeCheckingMode": "basic",

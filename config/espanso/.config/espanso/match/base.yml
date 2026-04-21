@@ -71,3 +71,11 @@ matches:
         type: shell
         params:
           cmd: "~/github/scripts/scripts/espanso/case-picker.sh"
+
+  - trigger: ";whi"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: "~/github/scripts/scripts/espanso/whisper-espanso.sh"
