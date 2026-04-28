@@ -17,7 +17,7 @@ How to work with this repo.
 
 ## Before Modifying
 
-1. Check `todo.md` and `stuff I missed` for known issues
+1. Check `local/todo.md` and `local/stuff I missed` for known issues
 2. Read existing docs in that section
 3. Understand integration points (see section READMEs)
 
