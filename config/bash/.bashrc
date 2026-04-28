@@ -660,3 +660,8 @@ export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init - bash)"
 
 # source /home/swap/github/alacritty/extra/completions/alacritty.bash
+
+# Source secrets
+if [ -f ~/.env.secret ]; then
+    source ~/.env.secret
+fi
