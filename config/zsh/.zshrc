@@ -196,3 +196,6 @@ export PATH=/home/swap/.opencode/bin:$PATH
 if [ -f ~/.env.secret ]; then
     source ~/.env.secret
 fi
+
+# whisper alias
+alias whisper="~/github/scripts/scripts/utils/whisper.sh"

@@ -915,6 +915,53 @@ require('lazy').setup({
   -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
+  {
+    'epwalsh/obsidian.nvim',
+    version = '*', -- latest stable version
+    event = { 'BufReadPre ' .. vim.fn.expand('~') .. '/github/obsidian-vault/**.md' },
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim',
+      'nvim-treesitter/nvim-treesitter',
+    },
+    config = function()
+      require('obsidian').setup({
+        workspaces = {
+          {
+            name = 'vault',
+            path = '~/github/obsidian-vault',
+          },
+        },
+        notes_subdir = 'daily n gratitude',
+        templates = {
+          subdir = 'templates',
+        },
+        -- Optional, by default all new notes will be prefaced with a timestamp.
+        -- Example: '2024-01-01-my-new-note.md'
+        note_id = function()
+          return require('obsidian.util').format_time('%Y-%m-%d')
+        end,
+        mappings = {
+          -- Overrides the 'gf' mapping to work on markdown files only
+          open_link = { 'gf' },
+          -- Create a new note from a template
+          new = '<leader>on',
+          -- Yank the current note's title to register 0
+          yank_note_title = 'y<C-y>',
+          -- Toggle check-boxes
+          toggle_check = { '<C-space>', '<leader>ch' },
+        },
+        -- Use the default preview function
+        note_id_func = function()
+          return require('obsidian.util').format_time('%Y-%m-%d')
+        end,
+        -- Use the default note title function
+        note_title_func = function()
+          return require('obsidian.util').format_time('%Y-%m-%d')
+        end,
+      })
+    end,
+  },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
