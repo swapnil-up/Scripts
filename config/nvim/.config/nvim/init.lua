@@ -320,6 +320,7 @@ require('lazy').setup({
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
         { 'gr', group = 'LSP Actions', mode = { 'n' } },
+        { '<leader>o', group = '[O]bsidian', mode = { 'n', 'v' } },
       },
     },
   },
@@ -918,7 +919,11 @@ require('lazy').setup({
   {
     'epwalsh/obsidian.nvim',
     version = '*', -- latest stable version
-    event = { 'BufReadPre ' .. vim.fn.expand('~') .. '/github/obsidian-vault/**.md' },
+    -- We use 'event' to lazy-load the plugin when we open a markdown file in our vault.
+    event = {
+      'BufReadPre ' .. vim.fn.expand('~') .. '/github/obsidian-vault/**.md',
+      'BufNewFile ' .. vim.fn.expand('~') .. '/github/obsidian-vault/**.md',
+    },
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-telescope/telescope.nvim',
@@ -932,32 +937,81 @@ require('lazy').setup({
             path = '~/github/obsidian-vault',
           },
         },
-        notes_subdir = 'daily n gratitude',
-        templates = {
-          subdir = 'templates',
+        -- New notes will go to the root of the vault.
+        daily_notes = {
+          folder = 'daily n gratitude',
+          date_format = '%Y-%m-%d',
         },
-        -- Optional, by default all new notes will be prefaced with a timestamp.
-        -- Example: '2024-01-01-my-new-note.md'
-        note_id = function()
-          return require('obsidian.util').format_time('%Y-%m-%d')
+
+        -- Optional, customize how names/IDs for new notes are created.
+        note_id_func = function(title)
+          -- If title is given, use it as the ID (and filename).
+          if title ~= nil then
+            return title
+          end
+          -- If title is nil, just use timestamp.
+          return tostring(os.time())
         end,
+
         mappings = {
-          -- Overrides the 'gf' mapping to work on markdown files only
-          open_link = { 'gf' },
-          -- Create a new note from a template
-          new = '<leader>on',
-          -- Yank the current note's title to register 0
-          yank_note_title = 'y<C-y>',
+          -- "Obsidian follow" - overrides 'gf' to work on markdown links
+          ['gf'] = {
+            action = function()
+              return require('obsidian').util.gf_passthrough()
+            end,
+            opts = { noremap = false, expr = true, buffer = true },
+          },
           -- Toggle check-boxes
-          toggle_check = { '<C-space>', '<leader>ch' },
+          ['<leader>ch'] = {
+            action = function()
+              return require('obsidian').util.toggle_checkbox()
+            end,
+            opts = { buffer = true },
+          },
+          -- Smart action depending on context, either follow link or toggle checkbox.
+          ['<cr>'] = {
+            action = function()
+              return require('obsidian').util.smart_action()
+            end,
+            opts = { buffer = true, expr = true },
+          },
         },
-        -- Use the default preview function
-        note_id_func = function()
-          return require('obsidian.util').format_time('%Y-%m-%d')
+
+        -- Optional, customize how wiki links are formatted.
+        ---@param opts { path: string, label: string, id: string|? }
+        ---@return string
+        wiki_link_func = function(opts)
+          if opts.id == nil then
+            return string.format('[[%s]]', opts.label)
+          elseif opts.label ~= opts.id then
+            return string.format('[[%s|%s]]', opts.id, opts.label)
+          else
+            return string.format('[[%s]]', opts.id)
+          end
         end,
-        -- Use the default note title function
-        note_title_func = function()
-          return require('obsidian.util').format_time('%Y-%m-%d')
+      })
+
+      -- Global keymaps for Obsidian
+      vim.keymap.set('n', '<leader>on', '<cmd>ObsidianNew<CR>', { desc = '[O]bsidian [N]ew note' })
+      vim.keymap.set('n', '<leader>os', '<cmd>ObsidianSearch<CR>', { desc = '[O]bsidian [S]earch (Fuzzy Text)' })
+      vim.keymap.set('n', '<leader>of', '<cmd>ObsidianQuickSwitch<CR>', { desc = '[O]bsidian [F]ind (File names)' })
+      vim.keymap.set('n', '<leader>ob', '<cmd>ObsidianBacklinks<CR>', { desc = '[O]bsidian [B]acklinks' })
+      vim.keymap.set('n', '<leader>ot', '<cmd>ObsidianToday<CR>', { desc = '[O]bsidian [T]oday' })
+      vim.keymap.set('n', '<leader>oo', '<cmd>ObsidianOpen<CR>', { desc = '[O]bsidian [O]pen in app' })
+      
+      -- Linking shortcuts
+      -- In visual mode: Link selected text to an existing note
+      vim.keymap.set('v', '<leader>ol', '<cmd>ObsidianLink<CR>', { desc = '[O]bsidian [L]ink to existing' })
+      -- In visual mode: Link selected text to a new note (creates the note)
+      vim.keymap.set('v', '<leader>on', '<cmd>ObsidianLinkNew<CR>', { desc = '[O]bsidian [L]ink to [N]ew' })
+      -- In normal mode: Link the word under cursor to an existing note
+      vim.keymap.set('n', '<leader>ol', '<cmd>ObsidianLink<CR>', { desc = '[O]bsidian [L]ink to existing' })
+      
+      -- Optional: conceal markdown syntax for links
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'markdown',
+        callback = function()
+          vim.opt_local.conceallevel = 2
         end,
       })
     end,
