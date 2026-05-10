@@ -199,3 +199,4 @@ fi
 
 # whisper alias
 alias whisper="~/github/scripts/scripts/utils/whisper.sh"
+alias piper="~/github/scripts/scripts/utils/piper.sh"

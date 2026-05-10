@@ -21,17 +21,17 @@ if [ -f "$TEMP_AUDIO" ]; then
 	TRANSCRIPTION=$($WHISPER_EXE -m "$MODEL_PATH" -f "$TEMP_AUDIO" -nt 2>/dev/null)
 
 	# remove Whisper's [brackets] and extra spaces
-	CLEAN_TEXT=$(echo "$TRANSCRIPTION" | sed 's/\[.*\]//g' | xargs)
+	CLEAN_TEXT=$(echo "$TRANSCRIPTION" | sed 's/\[.*\]//g' | tr -s ' ' | sed 's/^ //;s/ $//')
 
 	if [ -n "$CLEAN_TEXT" ]; then
 		echo "$CLEAN_TEXT" | xclip -selection clipboard
 
-		notify-send "Whisper Copied" "$CLEAN_TEXT" -i edit-paste -t 0
+		notify-send "Whisper Copied" "$CLEAN_TEXT" -i edit-paste
 	else
 		echo "Error: Transcription was empty."
-		notify-send "Whisper Error" "Transcription was empty" -u critical
+		notify-send "Whisper Error" "Transcription was empty"
 	fi
 else
 	echo "Error: Audio file was not created. Check your microphone."
-	notify-send "Whisper Error" "Audio file not found" -u critical
+	notify-send "Whisper Error" "Audio file not found"
 fi
