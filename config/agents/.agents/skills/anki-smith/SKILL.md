@@ -1,7 +1,7 @@
 ---
 name: anki-smith
 description: >
-  Converts knowledge failures and insights into atomic Anki flashcards exported as a pipe-delimited CSV (question|answer|extra). Use when the user says "make cards for X", "anki-smith on X", "convert my failures to cards", "generate anki cards", or after the Grand Inquisitor session is complete and session-log.md exists. Always use this skill for Anki card generation — never generate cards inline in chat. Reads ~/knowledge/{subject}/session-log.md as primary source. Can optionally ingest ~/knowledge/{subject}/architecture.md for foundational cards. Appends to ~/knowledge/{subject}/cards.csv.
+  Generates atomic Anki flashcards from review material. Exports pipe-delimited CSV (question|answer|extra). Inspired by Michael Nielsen's Anki practices. See .skills/references/neilsen-on-anki for the full essay. Use when the user says "make cards for X", "anki-smith on X", "convert my failures to cards", "generate anki cards", or after the Grand Inquisitor session. Reads any provided review material (e.g., session-log.md, chapter review). Output CSV is saved alongside the source material unless a path is specified.
 ---
 
 # Anki Smith
@@ -12,15 +12,16 @@ You are a retention engineer. Your job is not to summarize what the user learned
 
 Every card must encode a **mechanism**, not a fact. "What does X do?" is trivia. "Why does X behave this way when Y?" is a card worth making.
 
+**Philosophy (from Nielsen):** Anki skill concretely instantiates your theory of how you understand. Cards should be like a sharp chisel — one precise strike per card, not a sledgehammer.
+
 ---
 
 ## File Conventions
 
 | File | Read/Write | Purpose |
 |---|---|---|
-| `~/knowledge/{subject}/session-log.md` | Read | Primary source — failures from Grand Inquisitor |
-| `~/knowledge/{subject}/architecture.md` | Read (optional) | Foundational cards if user requests |
-| `~/knowledge/{subject}/cards.csv` | Append | Output — pipe-delimited, no header row |
+| Source material (any `.md`) | Read | Review notes, session logs, chapter questions |
+| Output CSV | Append | Same directory as the source, named `{source-name}-anki.csv` |
 
 ---
 
@@ -34,40 +35,59 @@ question|answer|extra
 
 **Field rules:**
 
-- **question**: A complete, standalone prompt. Must be answerable without context. Never "What is it?" — always "How does X produce Y?"
-- **answer**: The mechanism in 1–3 sentences. Dense but complete. Not a textbook definition — a working explanation.
-- **extra**: Anything that adds signal without being load-bearing. A concrete example, a failure mode, a contrast ("unlike Y, which does Z"), or empty if nothing adds value.
+- **question**: Atomic, standalone. Must be answerable without context. Short enough to fit in one glance.
+- **answer**: **1 sentence max** (often just a few words). A single atomic idea. Not a definition — a mechanism.
+- **extra**: Optional. Not tested. Supplementary material: an analogy, example, related context, or contrast you'd like to read while reviewing but are not required to recall. Leave empty if nothing to add.
+
+Keep both `question` and `answer` tight. If your answer needs two sentences, the question isn't atomic enough — split it.
 
 No markdown inside fields. No quotes around fields unless the field contains a pipe character (escape with backslash if needed).
 
-Append to existing `cards.csv` — never overwrite. If the file doesn't exist, create it.
+Append to existing CSV in the source directory — never overwrite. If the file doesn't exist, create it.
 
 ---
 
 ## Card Generation Rules
 
-### Source: session-log.md (primary)
+### Source: review material (primary)
 
-For each failure entry in the session log, generate 1–2 cards. The failure entry has:
-- What was asked
-- What was wrong (the misconception)
-- The correct mechanism
+For each question or failure in the material:
 
-Your job: forge a card that targets the **gap**, not the topic.
+1. **Identify the atomic gaps** — each gap is a thing the user got wrong or was fuzzy on.
+2. **Generate 2–4 cards per gap**, more if the concept is rich. Never 1 — avoid orphans.
 
-If the misconception was "confused cause and effect", the card question should force the user to trace the causal chain.  
-If the misconception was "knew what but not why", the question must demand the why.
+### Atomicity (from Nielsen)
 
-**One failure → one card that directly prevents that specific failure from recurring.**
+Break each concept into the smallest possible pieces:
 
-Sometimes a failure reveals two separate gaps (e.g., wrong on the concept AND wrong on a related mechanism). In that case, make two cards.
+```
+❌ Combined: How to create a Unix soft link from linkname to filename?
+   → "ln -s filename linkname"
+   → User kept getting this wrong
+
+✅ Atomic card 1: What's the basic command and option to create a Unix soft link?
+   → "ln -s"
+✅ Atomic card 2: When creating a Unix soft link, what order do linkname and filename go in?
+   → "filename linkname (the target comes first)"
+```
+
+If a question is fuzzy and you keep getting it wrong, it's not atomic enough.
+
+Sometimes a failure reveals two separate gaps. In that case, make cards for each gap separately. The gap is not the topic — it's the specific piece the user didn't understand.
+
+### Rules of thumb
+
+- **No orphan questions**: Never put in a single card about a topic. Minimum 3 per concept cluster, more if the material is rich. "If a paper is so uninteresting that it's not possible to add 5 good questions about it, it's usually better to add no questions at all."
+- **Avoid yes/no patterns**: "Is X true?" → refactor into "What condition makes X true?" or "When does X fail?"
+- **No definitions**: "What is X?" is trivia. "How does X produce Y?" is a card worth making.
+- **Attribute uncertain claims**: If Ankifying a paper's claim, frame it as "What does Paper 2024 claim about X?" rather than stating it as fact.
 
 ### Source: architecture.md (optional)
 
 If the user asks for foundational cards ("also card the architecture"), generate one card per pillar:
 - One card for the Primal Problem (framed as: "What problem does X solve that made it worth building?")
 - One card for the Atomic Unit
-- One card for the Organizing Principle (always includes a brief ASCII or textual diagram in `extra`)
+- One card for the Organizing Principle
 - One card per Core Constraint
 
 These are the scaffold. Session-log cards are the scar tissue. Both matter.
@@ -93,22 +113,29 @@ For grouped cards, the answer lists all items with a one-line explanation each.
 
 ## Card Quality Standards
 
-**Strong card:**
+**Too verbose (avoid):**
 ```
-What guarantees that two Git commits with the same content always have the same SHA?|Git uses content-addressed storage: the SHA is a hash of the content itself, not the filename or location. Same bytes = same hash, always.|This is why you can trust a SHA as a fingerprint. If it matches, the content is identical.
+What exactly does an LLM compute internally when given a partial sequence like "The cat sat on the"?|It computes a probability distribution over every token in its vocabulary — each token gets a probability — then samples one token from that distribution to continue.|Sampling is why the same prompt can give different outputs.
 ```
+
+One card trying to hold three atomic ideas. Cramped question, long answer.
+
+**Strong cards (atomic, tight):**
+```
+What does an LLM output when predicting the next token in a sequence?|A probability distribution over every token in its vocabulary.|This is why it's called a "language model" — it models the distribution of language.
+
+How does an LLM convert the probability distribution into the next output token?|It samples from the distribution rather than always picking the highest-probability token.|Greedy decoding = always pick max. Sampling = roll the dice.
+
+Why can the same prompt produce different outputs from an LLM?|Because the LLM samples from the probability distribution over next tokens.|Temperature controls this randomness. Higher temp = more uniform distribution.
+```
+
+The verbose card tries to cram everything into one. The strong cards split the concept into three atomic pieces. Each is easy to answer, easy to fail precisely, and they support each other as a cluster. The `extra` field adds color without being load-bearing.
 
 **Weak card (never make this):**
 ```
 What is a Git commit?|A snapshot of your repository at a point in time.|
 ```
-
-The weak card tests recall of a definition. The strong card tests understanding of a mechanism with a real-world implication in `extra`.
-
-**Contrast cards** are high-value when the session log shows the user confuses two things:
-```
-Git merge vs rebase: what is the structural difference in history shape?|Merge creates a new commit with two parents, preserving both branch histories as a DAG fork. Rebase replays commits linearly, producing a straight line — existing commits are rewritten with new SHAs.|Use merge when history accuracy matters (shared branches). Use rebase when a clean linear history matters (feature branches before PR).
-```
+A definition with no mechanism. Doesn't prevent any real failure.
 
 ---
 
@@ -116,13 +143,26 @@ Git merge vs rebase: what is the structural difference in history shape?|Merge c
 
 No preamble in the CSV. No commentary. Generate the cards, confirm how many were written and to what file, done.
 
-If the session log is sparse or the failures are vague, say so — don't pad with low-quality cards. Fewer sharp cards beat many dull ones.
+If the material is sparse or the failures are vague, say so — don't pad with low-quality cards. Fewer sharp cards beat many dull ones.
+
+---
+
+## Subagents for large batches
+
+For large batches (10+ questions or multiple chapter sections), spawn focused subagents to parallelize:
+
+1. Split the material by question cluster — one subagent per 1–3 related questions
+2. Give each subagent only its slice of the review text and the card generation rules
+3. Review all outputs yourself before appending — catch malformed cards, fix statements that aren't questions, trim verbosity
+
+This saves your working context, lets subagents focus deeply, and runs generation in parallel.
 
 ---
 
 ## Handoff
 
 After writing cards:
-- Confirm: "N cards appended to `~/knowledge/{subject}/cards.csv`"
-- If foundational cards were also generated: "Including N foundational cards from architecture.md"
-- No further action needed — import `cards.csv` into Anki via File → Import, pipe-delimited, map fields 1/2/3
+- Confirm: "N cards appended to `{source-dir}/{source-name}-anki.csv`"  
+- List the topics covered (e.g., "Probability distributions, Sampling vs greedy, Output variation")
+- If the user specified a custom path, use that instead
+- Import `cards.csv` into Anki via File → Import, pipe-delimited
