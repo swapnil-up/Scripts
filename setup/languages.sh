@@ -38,8 +38,8 @@ echo ">>> LANGUAGES_RUST_DONE <<<"
 
 # Install Tree-sitter CLI via Cargo (The GLIBC-safe way)
 if ! command -v tree-sitter &>/dev/null; then
-	echo "Installing Tree-sitter CLI via Cargo (building from source)..."
+	echo "Installing Tree-sitter CLI via Cargo (building from source, check setup.log)..."
 	# This ensures it's compiled specifically for your system's GLIBC
-	cargo install tree-sitter-cli
+	cargo install tree-sitter-cli >> "${LOG_FILE:-/dev/null}" 2>&1
 fi
 echo ">>> LANGUAGES_COMPLETE <<<"

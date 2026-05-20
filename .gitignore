@@ -4,3 +4,4 @@ wget-log
 scraped_content.txt
 .ruff_cache
 local/
+setup.log
