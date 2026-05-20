@@ -57,11 +57,13 @@ if [ ! -f "/opt/firefox-dev/firefox" ]; then
 	curl -L "https://download.mozilla.org/?product=firefox-devedition-latest-ssl&os=linux64&lang=en-US" -o "$TEMP_FF/firefox.tar.archive"
 
 	echo "Extracting..."
+	# Mozilla tarball contains a 'firefox/' folder
 	sudo tar -xf "$TEMP_FF/firefox.tar.archive" -C /opt/
-	# The tarball extracts to a folder named 'firefox'
+	
+	# Move the extracted 'firefox' folder to 'firefox-dev'
 	sudo mv /opt/firefox /opt/firefox-dev
 
-	# 3. Create Symlink to the actual binary
+	# 3. Create Symlink to the actual binary (/opt/firefox-dev/firefox)
 	sudo ln -sf /opt/firefox-dev/firefox /usr/local/bin/firefox-dev
 
 	# 4. Create Desktop Entry

@@ -164,7 +164,7 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+# bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 
 # resize window (you can also use the mouse for that)
@@ -189,6 +189,37 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+# --- Launch Mode (Apps) ---
+set $mode_launch Launch: [f]irefox [c]ode [a]nki [n]autilus [m]pv [o]bsidian
+mode "$mode_launch" {
+    bindsym f exec --no-startup-id "command -v firefox-dev >/dev/null && firefox-dev || firefox", mode "default"
+    bindsym c exec --no-startup-id code, mode "default"
+    bindsym a exec --no-startup-id anki, mode "default"
+    bindsym n exec --no-startup-id nautilus --no-desktop --new-window, mode "default"
+    bindsym m exec --no-startup-id mpv --player-operation-mode=pseudo-gui, mode "default"
+    bindsym o exec --no-startup-id obsidian, mode "default"
+
+    # back to normal
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+z mode "$mode_launch"
+
+# --- System Mode (Power) ---
+set $mode_system System: [l]ock [e]xit [s]uspend [r]eboot [p]oweroff
+mode "$mode_system" {
+    bindsym l exec --no-startup-id i3lock, mode "default"
+    bindsym e exec --no-startup-id i3-msg exit, mode "default"
+    bindsym s exec --no-startup-id systemctl suspend, mode "default"
+    bindsym r exec --no-startup-id systemctl reboot, mode "default"
+    bindsym p exec --no-startup-id systemctl poweroff, mode "default"
+
+    # back to normal
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+Shift+BackSpace mode "$mode_system"
+
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
@@ -207,10 +238,10 @@ bindsym $mod+e exec --no-startup-id maim --format=png --select | xclip -selectio
 
 
 # start a nautilus
-bindsym $mod+g exec --no-startup-id nautilus --no-desktop --new-window
+# bindsym $mod+g exec --no-startup-id nautilus --no-desktop --new-window
 
 # start anki 
-bindsym $mod+Shift+g exec --no-startup-id anki
+# bindsym $mod+Shift+g exec --no-startup-id anki
 
 # autostart anki
 # exec --no-startup-id i3-msg 'exec --no-startup-id /usr/local/bin/anki'
@@ -231,7 +262,7 @@ bindsym Mod1+Shift+b exec ~/connect_and_launch.sh
 #bindsym $mod+Shift+b exec --no-startup-id qutebrowser
 
 # start Firefox browser
-bindsym $mod+b exec --no-startup-id "command -v firefox-dev >/dev/null && firefox-dev || firefox"
+# bindsym $mod+b exec --no-startup-id "command -v firefox-dev >/dev/null && firefox-dev || firefox"
 
 # Screen brightness controls
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5% && notify-send "Brightness Up" "$(brightnessctl | grep -oP '\(\K\d+%' | head -1)"
@@ -348,11 +379,11 @@ exec_always --no-startup-id conky -c ~/.config/conky/conky_quotes.conf
 # bindsym $mod+ctrl+t exec --no-startup-id ~/github/scripts/scripts/rofi-todo-remove.sh
 
 # Open VS Code
-bindsym $mod+c exec --no-startup-id code
+# bindsym $mod+c exec --no-startup-id code
 
 # Open mpv in a floating window
  for_window [class="mpv"] floating enable
-bindsym $mod+y exec --no-startup-id mpv --player-operation-mode=pseudo-gui
+# bindsym $mod+y exec --no-startup-id mpv --player-operation-mode=pseudo-gui
 
 # snippet picker
 for_window [title="Snippet Picker"] floating enable, resize set 1000 600, move position center
