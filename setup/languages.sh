@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
+echo ">>> LANGUAGES_START <<<"
 echo "--- Running Language/Runtime Installer ---"
 
 sudo apt install -y build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev pkg-config libc6-dev-i386 clang-18 libclang-common-18-dev
@@ -13,6 +14,7 @@ if [ ! -d "$HOME/.pyenv" ]; then
 else
 	echo "Pyenv already installed, skipping..."
 fi
+echo ">>> LANGUAGES_PYENV_DONE <<<"
 
 # Install NVM (Node Version Manager) if missing
 if [ ! -d "$HOME/.nvm" ]; then
@@ -25,12 +27,14 @@ if [ ! -d "$HOME/.nvm" ]; then
 	nvm install --lts
 	nvm use --lts
 fi
+echo ">>> LANGUAGES_NVM_DONE <<<"
 
 # Install Rust via Rustup if missing
 if ! command -v cargo &>/dev/null; then
 	echo "Installing Rust..."
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 fi
+echo ">>> LANGUAGES_RUST_DONE <<<"
 
 # Install Tree-sitter CLI via Cargo (The GLIBC-safe way)
 if ! command -v tree-sitter &>/dev/null; then
@@ -38,3 +42,4 @@ if ! command -v tree-sitter &>/dev/null; then
 	# This ensures it's compiled specifically for your system's GLIBC
 	cargo install tree-sitter-cli
 fi
+echo ">>> LANGUAGES_COMPLETE <<<"

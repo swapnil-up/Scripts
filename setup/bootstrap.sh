@@ -2,8 +2,11 @@
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 
+echo ">>> [DEBUG] SCRIPT STARTED <<<"
+
 # Ask for sudo upfront and keep it alive
 sudo -v
+echo ">>> [DEBUG] SUDO -V PASSED <<<"
 while true; do
 	sudo -n true
 	sleep 60
@@ -11,6 +14,11 @@ while true; do
 done 2>/dev/null &
 
 echo "Installing base requirements..."
+
+# 0. Cleanup broken LLVM configs from previous runs
+echo "Cleaning up potential repository conflicts..."
+sudo rm -f /etc/apt/sources.list.d/llvm-18.list*
+sudo rm -f /etc/apt/trusted.gpg.d/llvm-18.gpg
 
 # 1. Update package lists (essential for a fresh install)
 sudo apt update -y
@@ -33,7 +41,16 @@ done
 # Get the directory where the script is located to handle relative paths correctly
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+echo ">>> BOOTSTRAP_MODULAR_START <<<"
 echo "Starting modular installations..."
+
+# Add LLVM repository for clang-18
+# Fix: Using 'jammy' instead of 'bookworm' for Ubuntu 22.04
+# Fix: Using /usr/share/keyrings/ and [signed-by=...] for modern apt
+echo "Configuring LLVM 18 repository..."
+curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor | sudo tee /usr/share/keyrings/llvm-18.gpg >/dev/null
+echo "deb [signed-by=/usr/share/keyrings/llvm-18.gpg] http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" | sudo tee /etc/apt/sources.list.d/llvm-18.list
+sudo apt update -y
 
 sudo groupadd --system uinput || true
 sudo usermod -aG input $USER
@@ -50,6 +67,7 @@ chmod +x "$SCRIPT_DIR/packages.sh"
 "$SCRIPT_DIR/packages.sh"
 
 # --- 5. The Stow Phase ---
+echo ">>> BOOTSTRAP_STOW_START <<<"
 echo "Linking configurations with Stow..."
 
 # Find the configs directory relative to the script
@@ -79,12 +97,14 @@ for folder in */; do
 	echo "  [LINK] Stowing $folder..."
 	stow -R -t "$HOME" "$folder"
 done
+echo ">>> BOOTSTRAP_STOW_END <<<"
 
 FONT_NAME="JetBrainsMono"
 FONT_DIR="$HOME/.local/share/fonts"
 CHECK_FILE="$FONT_DIR/JetBrainsMonoNerdFont-Regular.ttf"
 VERSION="v3.4.0"
 
+echo ">>> BOOTSTRAP_FONTS_START <<<"
 if [ ! -f "$CHECK_FILE" ]; then
 	echo "--- Installing $FONT_NAME Nerd Font ---"
 
@@ -117,5 +137,7 @@ if [ ! -f "$EMOJI_CHECK" ]; then
 else
 	echo "--- Noto Color Emoji already exists, skipping ---"
 fi
+echo ">>> BOOTSTRAP_FONTS_END <<<"
 
+echo ">>> BOOTSTRAP_COMPLETE <<<"
 echo "Setup complete! Restart your shell."

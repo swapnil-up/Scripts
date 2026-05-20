@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
+echo ">>> PACKAGES_START <<<"
 echo "--- Running Package Installer ---"
 
 # --- 1. Add External Repos (with existence checks) ---
@@ -18,11 +19,12 @@ fi
 
 # VS Code Repo (Safe version)
 if [ ! -f "/etc/apt/sources.list.d/vscode.list" ]; then
-	wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft.gpg >/dev/null
+	curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft.gpg >/dev/null
 	echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
 fi
 
 sudo apt update
+echo ">>> PACKAGES_REPOS_ADDED <<<"
 
 # --- 2. Install Apps ---
 APPS=(
@@ -42,6 +44,7 @@ for app in "${APPS[@]}"; do
 		echo "$app already exists, skipping."
 	fi
 done
+echo ">>> PACKAGES_APT_DONE <<<"
 
 # --- 3. Binaries & Tools ---
 
@@ -57,6 +60,7 @@ if ! command -v kanata &>/dev/null; then
 	curl -L https://github.com/jtroo/kanata/releases/latest/download/kanata_linux_x64 -o "$HOME/.local/bin/kanata"
 	chmod +x "$HOME/.local/bin/kanata"
 fi
+echo ">>> PACKAGES_BINARIES_DONE <<<"
 
 # --- 4. Obsidian (Flatpak) ---
 echo "--- Installing Flatpak Apps ---"
@@ -82,6 +86,7 @@ flatpak_exports="$HOME/.local/share/flatpak/exports/share"
 if [[ ":$XDG_DATA_DIRS:" != *":$flatpak_exports:"* ]]; then
 	export XDG_DATA_DIRS="$flatpak_exports:$XDG_DATA_DIRS"
 fi
+echo ">>> PACKAGES_FLATPAK_DONE <<<"
 
 # --- 5. Clipmenu (Build from Source) ---
 if ! command -v clipmenu &>/dev/null; then
@@ -103,6 +108,7 @@ if ! command -v clipmenu &>/dev/null; then
 	rm -rf "$TEMP_DIR"
 	echo "clipmenu installed and source removed."
 fi
+echo ">>> PACKAGES_CLIPMENU_DONE <<<"
 
 # --- Espanso (AppImage) ---
 if ! command -v espanso &>/dev/null; then
@@ -112,7 +118,7 @@ if ! command -v espanso &>/dev/null; then
 
 	# 1. Create directory and download
 	mkdir -p "$HOME/opt"
-	wget -O "$HOME/opt/Espanso.AppImage" 'https://github.com/espanso/espanso/releases/latest/download/Espanso-X11.AppImage'
+	curl -L -o "$HOME/opt/Espanso.AppImage" 'https://github.com/espanso/espanso/releases/latest/download/Espanso-X11.AppImage'
 	chmod u+x "$HOME/opt/Espanso.AppImage"
 
 	# 2. Register path (Create alias)
@@ -126,6 +132,7 @@ if ! command -v espanso &>/dev/null; then
 else
 	echo "Espanso already exists, skipping."
 fi
+echo ">>> PACKAGES_ESPANSO_DONE <<<"
 
 # --- Calibre ---
 if ! command -v calibre &>/dev/null; then
@@ -135,10 +142,11 @@ if ! command -v calibre &>/dev/null; then
 
 	# Run the official installer
 	# Note: We use --unattended to avoid interactive prompts
-	sudo wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin install_dir=/opt isolated=false
+	curl -sSL https://download.calibre-ebook.com/linux-installer.sh | sudo sh /dev/stdin install_dir=/opt isolated=false
 else
 	echo "Calibre already exists, skipping."
 fi
+echo ">>> PACKAGES_CALIBRE_DONE <<<"
 
 # --- Anki (Official Launcher) ---
 if ! command -v anki &>/dev/null; then
@@ -173,3 +181,83 @@ if ! command -v anki &>/dev/null; then
 else
 	echo "Anki already exists, skipping."
 fi
+# --- CMake (From Source) ---
+if ! command -v cmake &>/dev/null || [[ "$(cmake --version | head -n1)" != *"3.3"* ]]; then
+	# We check for a recent version. If it's old or missing, we build.
+	echo "--- Installing CMake from source ---"
+	sudo apt install -y libssl-dev
+	TEMP_CMAKE=$(mktemp -d)
+	git clone --depth 1 https://github.com/Kitware/CMake.git "$TEMP_CMAKE"
+	cd "$TEMP_CMAKE"
+	./bootstrap --prefix=/usr/local
+	make -j$(nproc)
+	sudo make install
+	cd - >/dev/null
+	rm -rf "$TEMP_CMAKE"
+else
+	echo "CMake already exists ($(cmake --version | head -n1)), skipping."
+fi
+
+# --- Raylib (From Source) ---
+if [ ! -f "/usr/local/include/raylib.h" ]; then
+	echo "--- Installing Raylib from source ---"
+	# Install dependencies
+	sudo apt install -y libasound2-dev libx11-dev libxrandr-dev libxi-dev libxcursor-dev libxinerama-dev libxkbcommon-dev
+
+	TEMP_RAY=$(mktemp -d)
+	git clone --depth 1 https://github.com/raysan5/raylib.git "$TEMP_RAY"
+	mkdir -p "$TEMP_RAY/build"
+	cd "$TEMP_RAY/build"
+	cmake -DBUILD_EXAMPLES=OFF -DBUILD_GAMES=OFF ..
+	make -j$(nproc)
+	sudo make install
+	cd - >/dev/null
+	rm -rf "$TEMP_RAY"
+else
+	echo "Raylib already exists, skipping."
+fi
+
+# --- Firefox Developer Edition ---
+if [ ! -f "/opt/firefox-dev/firefox" ]; then
+	echo "--- Installing Firefox Developer Edition ---"
+	# 1. Cleanup broken remnants
+	sudo rm -rf /opt/firefox-dev
+	sudo mkdir -p /opt/firefox-dev
+
+	# 2. Download and Extract
+	TEMP_FF=$(mktemp -d)
+	echo "Downloading Firefox Developer Edition..."
+	# Note: Mozilla redirects to .tar.xz usually
+	curl -L "https://download.mozilla.org/?product=firefox-devedition-latest-ssl&os=linux64&lang=en-US" -o "$TEMP_FF/firefox.tar.archive"
+
+	echo "Extracting..."
+	# Using -x (auto-detect format) instead of -xjf
+	sudo tar -xf "$TEMP_FF/firefox.tar.archive" -C /opt/
+	sudo mv /opt/firefox /opt/firefox-dev
+
+	# 3. Create Symlink
+	sudo ln -sf /opt/firefox-dev/firefox /usr/local/bin/firefox-dev
+
+	# 4. Create Desktop Entry
+	echo "Creating desktop entry..."
+	cat <<EOF | sudo tee /usr/share/applications/firefox-developer.desktop >/dev/null
+[Desktop Entry]
+Name=Firefox Developer Edition
+GenericName=Web Browser
+Exec=/usr/local/bin/firefox-dev %u
+Terminal=false
+Type=Application
+Icon=/opt/firefox-dev/browser/chrome/icons/default/default128.png
+Categories=Network;WebBrowser;Development;
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;role=img/png;role=img/jpeg;role=img/gif;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;
+StartupNotify=true
+EOF
+
+	# 5. Cleanup
+	rm -rf "$TEMP_FF"
+	echo "Firefox Developer Edition installed."
+else
+	echo "Firefox Developer Edition already exists, skipping."
+fi
+
+echo ">>> PACKAGES_COMPLETE <<<"
