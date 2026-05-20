@@ -149,4 +149,5 @@
   "leetcode.defaultLanguage": "python3",
   "chat.viewSessions.orientation": "stacked",
   "terminal.integrated.initialHint": false,
+  "lean4.alwaysAskBeforeInstallingLeanVersions": true,
 }

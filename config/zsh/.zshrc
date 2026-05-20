@@ -191,6 +191,8 @@ eval "$(zoxide init zsh)"
 
 # opencode
 export PATH=/home/swap/.opencode/bin:$PATH
+# lean 
+export PATH=$HOME/.elan/bin:$PATH
 
 # Source secrets
 if [ -f ~/.env.secret ]; then

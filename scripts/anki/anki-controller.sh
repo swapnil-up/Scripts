@@ -16,4 +16,4 @@ while true; do
 done
 
 # Launch antimicrox
-antimicrox &
+io.github.antimicrox.antimicrox &

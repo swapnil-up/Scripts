@@ -39,3 +39,5 @@ PATH=/home/swap/.local/share/umake/bin:$PATH
 #xmodmap -e "add Hyper_L = $spare_modifier"
 #xmodmap -e "keycode any = space"
 #xcape -e "$spare_modifier=space"
+
+export PATH="$HOME/.elan/bin:$PATH"
