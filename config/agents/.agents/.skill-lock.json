@@ -1,0 +1,41 @@
+{
+  "version": 3,
+  "skills": {
+    "readme-wizard": {
+      "source": "debs-obrien/learn-agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/debs-obrien/learn-agent-skills.git",
+      "skillPath": ".agents/skills/readme-wizard/SKILL.md",
+      "skillFolderHash": "600e9b455a4a539b845d2d54491bbdb1d2984b91",
+      "installedAt": "2026-05-21T15:26:19.307Z",
+      "updatedAt": "2026-05-21T15:26:19.307Z"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "skillFolderHash": "3013fdeb8a11b10b1eb795ec3ae8bfca38f7c26d",
+      "installedAt": "2026-05-21T15:26:28.570Z",
+      "updatedAt": "2026-05-21T15:26:28.570Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  },
+  "lastSelectedAgents": [
+    "amp",
+    "antigravity",
+    "cline",
+    "codex",
+    "cursor",
+    "deepagents",
+    "dexto",
+    "firebender",
+    "gemini-cli",
+    "github-copilot",
+    "kimi-cli",
+    "opencode",
+    "warp"
+  ]
+}
